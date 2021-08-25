@@ -1,17 +1,20 @@
 import { FormEvent, useState, ReactElement } from "react";
 
 interface Props {
-  onSubmit: () => void;
+  createNewWallet: (username: string) => void;
 }
 
 const NewWalletForm = (props: Props): ReactElement => {
-  const { onSubmit } = props;
+  const { createNewWallet } = props;
   const [value, setValue] = useState('');
 
   const onChange = (e: FormEvent) => {
     const target = e.target as HTMLInputElement;
     setValue(target.value);
-    console.log(value);
+  };
+
+  const onSubmit = () => {
+    createNewWallet(value);
   };
 
   return (

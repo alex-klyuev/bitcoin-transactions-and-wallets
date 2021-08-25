@@ -3,7 +3,7 @@ const {
   createHash,
 } = require('crypto');
 
-const Queue = require('./Queue.js');
+// const Queue = require('./Queue.js');
 
 class Wallet {
   constructor(username) {
@@ -34,7 +34,7 @@ class Wallet {
     this.address = hash.digest('hex');
 
     // use a queue to store UTXO's
-    this.UTXOs = new Queue();
+    // this.UTXOs = new Queue();
   }
 
   // send money to a different address
@@ -57,4 +57,4 @@ class Wallet {
 
 const aliceWallet = new Wallet('alice');
 
-console.log(aliceWallet);
+console.log(typeof aliceWallet.pubKey);
