@@ -9,7 +9,7 @@ const alice = createECDH('secp256k1');
 
 alice.generateKeys();
 
-console.log('private', alice.getPrivateKey('hex'));
+console.log('private', alice.getPrivateKey('pem'));
 console.log('public', alice.getPublicKey('hex'));
 
 
