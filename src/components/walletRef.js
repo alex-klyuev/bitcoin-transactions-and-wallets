@@ -1,5 +1,3 @@
-import { useState, FormEvent, ReactElement } from 'react';
-
 import {
   generateKeyPairSync,
   createHash,
@@ -7,21 +5,7 @@ import {
 
 import Queue from '../classes/Queue.js';
 
-interface Props {
-  username: string;
-}
-
-const Wallet = (props: Props): ReactElement => {
-  const { username } = props;
-
-  // STARTING POINT: KEYS WILL POTENTIALLY RERENDER EVERYTIME
-
-  return ();
-};
-
 class Wallet {
-  // types
-  username:
   constructor(username: string) {
     // name not actually necessary, include to help with UI
     this.username = username;
