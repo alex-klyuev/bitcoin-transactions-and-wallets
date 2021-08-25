@@ -16,5 +16,11 @@ Transactions are chained together similar to blocks, using hashing and public-ke
 
 This chain will be modeled as a Doubly Linked List in this implementation, while also using hashing to create unique and irreversible transaction chains.
 
+## Interface
+
+I will design a barebones React app to play with the app.
+A new chain with empty wallets and transactions will be created on startup (unless I add data persistence).
+User will be able to create new wallets, send money from address to address, and see the transaction chain.
+
 ## Libraries
 Nodejs crypto module

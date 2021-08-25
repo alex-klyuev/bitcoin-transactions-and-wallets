@@ -38,6 +38,7 @@ class Wallet {
   }
 
   // send money to a different address
+  // This function invokes
   send(address) {
 
   }
