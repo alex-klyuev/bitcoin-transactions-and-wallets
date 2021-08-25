@@ -15,3 +15,6 @@ Transactions have inputs and outputs. Unspent transaction outputs (UTXO's) repre
 Transactions are chained together similar to blocks, using hashing and public-key cryptography.
 
 This chain will be modeled as a Doubly Linked List in this implementation, while also using hashing to create unique and irreversible transaction chains.
+
+## Libraries
+Nodejs crypto module
