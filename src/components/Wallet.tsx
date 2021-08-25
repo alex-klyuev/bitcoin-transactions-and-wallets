@@ -1,22 +1,19 @@
 import { useState, FormEvent, ReactElement } from 'react';
-
-import {
-  generateKeyPairSync,
-  createHash,
-} from 'crypto';
-
+import { generateKeyPairSync, createHash } from 'crypto';
 import Queue from '../classes/Queue.js';
 
 interface Props {
   username: string;
 }
 
+/*
+
 const Wallet = (props: Props): ReactElement => {
   const { username } = props;
 
   // STARTING POINT: KEYS WILL POTENTIALLY RERENDER EVERYTIME
 
-  return ();
+  return (<div></div>);
 };
 
 class Wallet {
@@ -74,3 +71,5 @@ class Wallet {
 const aliceWallet = new Wallet('alice');
 
 console.log(aliceWallet);
+
+*/
