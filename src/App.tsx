@@ -1,5 +1,6 @@
 import { ReactElement, useState } from 'react';
 import NewWalletForm from './components/NewWalletForm';
+import AddressList from './components/AddressList';
 import generateWallet from './functions/generateWallet';
 
 // addresses are stored as key values for quick lookup
@@ -47,6 +48,7 @@ const App = (): ReactElement => {
   return (
     <div>
       <NewWalletForm createNewWallet={createNewWallet} />
+      <AddressList wallets={walletTracker} />
     </div>
   );
 }
