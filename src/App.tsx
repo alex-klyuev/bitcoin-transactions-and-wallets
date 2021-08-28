@@ -38,9 +38,11 @@ const App = (): ReactElement => {
       }
     }
 
+    console.log(newWallet);
+
     // add to wallet tracker
     const updatedWalletTracker = {};
-    // Object.assign(updatedWalletTracker, walletTracker, newWallet);
+    Object.assign(updatedWalletTracker, walletTracker, newWallet);
     setWalletTracker(updatedWalletTracker);
     console.log(walletTracker);
   };
