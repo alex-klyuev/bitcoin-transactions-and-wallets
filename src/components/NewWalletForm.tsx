@@ -19,8 +19,8 @@ const NewWalletForm = (props: Props): ReactElement => {
 
   return (
     <div>
-      <div>Create New Wallet</div>
-      <div>Enter Username:</div>
+      <h4>Create New Wallet:</h4>
+      <div>Enter Username</div>
       <input
         value={value}
         onChange={onChange}

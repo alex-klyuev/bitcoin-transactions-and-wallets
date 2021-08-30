@@ -1,21 +1,18 @@
 import { ReactElement } from "react";
 
 interface Props {
-  wallets: {
-    [index: string]: {
-      username: string;
-      pubKey: string;
-      privKey: string;
-    }
-  }
+  addressList: string[];
 }
 
 const AddressList = (props: Props): ReactElement => {
-  const { wallets } = props;
+  const { addressList } = props;
+
+  console.log(addressList);
 
   return (
     <div>
-      {wallets.map((wallet) => <div>{/* how to store data? */}</div>)}
+      <h4>Address List:</h4>
+      {addressList.map((address) => <div>{address}</div>)}
     </div>
   )
 };
