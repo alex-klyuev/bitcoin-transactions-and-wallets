@@ -1,6 +1,10 @@
+// lib
 import { ReactElement, useState } from 'react';
+// components
 import NewWalletForm from './components/NewWalletForm';
+import UserWalletInterface from './components/UserWalletInterface';
 import AddressList from './components/AddressList';
+// functions
 import generateWallet from './functions/generateWallet';
 
 // addresses are stored as key values for quick lookup
@@ -39,7 +43,7 @@ const App = (): ReactElement => {
       pubKey: publicKey,
       privKey: privateKey
     }
-    setWalletTracker({...walletTracker});
+    setWalletTracker({ ...walletTracker });
 
     // add address to list
     addressList.push(address);
@@ -49,6 +53,13 @@ const App = (): ReactElement => {
   return (
     <div>
       <NewWalletForm createNewWallet={createNewWallet} />
+      {addressList.map((address) => {
+        const wallet = {
+          address,
+          ...walletTracker[address]
+        };
+        return < UserWalletInterface wallet={wallet} />
+      })}
       <AddressList addressList={addressList} />
     </div>
   );
