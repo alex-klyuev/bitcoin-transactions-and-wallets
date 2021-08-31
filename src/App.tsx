@@ -16,6 +16,19 @@ interface WalletTracker {
   }
 }
 
+// generate Genesis Wallet once upon start
+const initWalletTracker: WalletTracker = {};
+const initAddressList: string[] = [];
+const genesis = generateWallet();
+
+initWalletTracker[genesis.address] = {
+  username: 'Genesis',
+  pubKey: genesis.publicKey,
+  privKey: genesis.privateKey
+};
+
+initAddressList.push(genesis.address);
+
 const App = (): ReactElement => {
   // state management
 
@@ -24,8 +37,8 @@ const App = (): ReactElement => {
   // in reality, the private key would be securely stored by the user,
   // but we'll keep it here to start for the purposes of simulating the
   // Bitcoin transaction verification and chaining design at a high level
-  const [walletTracker, setWalletTracker] = useState<WalletTracker>({});
-  const [addressList, setAddressList] = useState<string[]>([]);
+  const [walletTracker, setWalletTracker] = useState<WalletTracker>(initWalletTracker);
+  const [addressList, setAddressList] = useState<string[]>(initAddressList);
 
   // handlers
   const createNewWallet = (username: string): void => {
@@ -58,7 +71,7 @@ const App = (): ReactElement => {
           address,
           ...walletTracker[address]
         };
-        return < UserWalletInterface wallet={wallet} />
+        return < UserWalletInterface key={address} wallet={wallet} />
       })}
       <AddressList addressList={addressList} />
     </div>

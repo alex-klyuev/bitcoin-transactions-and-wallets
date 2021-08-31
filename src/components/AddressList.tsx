@@ -7,12 +7,10 @@ interface Props {
 const AddressList = (props: Props): ReactElement => {
   const { addressList } = props;
 
-  console.log(addressList);
-
   return (
     <div>
       <h4>Address List:</h4>
-      {addressList.map((address) => <div>{address}</div>)}
+      {addressList.map((address) => <div key={address}>{address}</div>)}
     </div>
   )
 };
