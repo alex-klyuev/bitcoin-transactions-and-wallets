@@ -22,7 +22,7 @@ const UserWalletInterface = (props: Props): ReactElement => {
   return (
     <div>
       <h4>{username}</h4>
-      <div>Address: {address.length}</div>
+      <div>Address: {address}</div>
       <div>Balance:</div>
       {/* Send Money Form */}
     </div>
