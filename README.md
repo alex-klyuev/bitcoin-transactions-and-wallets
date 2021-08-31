@@ -31,7 +31,14 @@ User will be able to create new wallets, send money from address to address, and
 ```yaml
 Transaction: {
   Inputs: [{
-    Txid: hash/signature of this
+    Txid: hash of this transaction input (see below),
+    Sender Public Key: anyone can use this key to verify 1. ownership of this UTXO and 2. authenticity of this transaction,
+    Value: BTC amount
+  }],
+  Outputs: [{
+    Txid: all inputs are hashed with recipient address and signed by sender private key,
+    Recipient Address: hash of recipient public key,
+    Value: BTC amount
   }]
 }
 ```
