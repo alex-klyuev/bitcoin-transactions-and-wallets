@@ -22,5 +22,11 @@ I will design a barebones React app to play with the app.
 A new chain with empty wallets and transactions will be created on startup (unless I add data persistence).
 User will be able to create new wallets, send money from address to address, and see the transaction chain.
 
+## Implementation Details
+
+### Transaction Structure
+
+### Verification
+
 ## Libraries
 Nodejs crypto module

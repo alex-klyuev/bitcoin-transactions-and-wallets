@@ -21,10 +21,17 @@ const generateWallet = (): Wallet => {
   const privateKey = keyEncoder.encodePrivate(rawPrivateKey, 'raw', 'pem');
   const publicKey = keyEncoder.encodePublic(rawPublicKey, 'raw', 'pem');
 
-  // generate address by putting public key through sha256 hash function
+  /*
+  update to using public key as address
+  below commented code is for pubKey -> sha256 hashed address
+
+  generate address by putting public key through sha256 hash function
   const hash = createHash('sha256');
   hash.update(publicKey);
   const address = hash.digest('hex');
+  */
+
+  const address = rawPublicKey;
 
   return {
     address,

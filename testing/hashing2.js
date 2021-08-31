@@ -22,9 +22,9 @@ const {
 
 console.log('KEYS:', publicKey, privateKey, '\n');
 
-const hash = createHash('sha256');
-hash.update(publicKey);
-const address = hash.digest('hex');
+const addressHash = createHash('sha256');
+addressHash.update(publicKey);
+const address = addressHash.digest('hex');
 console.log('ADDRESS:', address, '\n');
 
 const sign = createSign('SHA256');
@@ -38,3 +38,14 @@ console.log('SIGNATURE:', sig, '\n');
 verify.update('JSON transaction data');
 verify.end();
 console.log(verify.verify(publicKey, sig, 'hex'));
+
+const hash1 = createHash('sha256');
+// order matters with these
+hash1.update(publicKey);
+hash1.update('sometxid');
+console.log(hash1.digest('hex'));
+
+const hash2 = createHash('sha256');
+hash2.update(publicKey);
+hash2.update('sometxid');
+console.log(hash2.digest('hex'));
