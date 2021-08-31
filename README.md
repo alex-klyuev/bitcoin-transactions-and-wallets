@@ -28,7 +28,7 @@ User will be able to create new wallets, send money from address to address, and
 
 ### Transaction Structure
 
-```json
+```yaml
 Transaction: {
   Inputs: [{
     Txid: hash/signature of this
