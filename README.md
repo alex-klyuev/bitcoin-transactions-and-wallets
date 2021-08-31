@@ -43,3 +43,8 @@ This chain will be modeled as a Doubly Linked List in this implementation, while
 ## Libraries
 Nodejs crypto module
 key-encoder
+
+## References
+https://github.com/bitcoinbook/bitcoinbook, especially Chapters 4 and 6
+https://developer.bitcoin.org/devguide/block_chain.html
+https://bitcoin.org/bitcoin.pdf
