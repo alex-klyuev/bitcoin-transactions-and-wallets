@@ -10,11 +10,13 @@ Technical concepts: hashing, cryptography
 
 In the Bitcoin network, "coins" are defined as transactions; in other words, balances only actually exist within transactions.
 
-Transactions have inputs and outputs. Unspent transaction outputs (UTXO's) represent existing user balances. <i>test</i>
+Transactions have inputs and outputs. Unspent transaction outputs (UTXO's) represent existing user balances.
 
 Transactions are chained together similar to blocks, using hashing and public-key cryptography.
 
-This chain will be modeled as a Doubly Linked List in this implementation, while also using hashing to create unique and irreversible transaction chains.
+Transaction outputs become inputs in following transactions. An owner of a UTXO can "unlock" it via their keys, and build a transaction to any other address on the network.
+
+<i>Each output can only be used as an input once.</i> This is verified by the consensus network / miners, which is out of scope for this project.
 
 ## Interface
 
@@ -33,6 +35,10 @@ Transaction: {
 }
 
 ### Verification
+
+### Transaction Chain
+
+This chain will be modeled as a Doubly Linked List in this implementation, while using hashing to create unique, irreversible, and verifiable transaction chains.
 
 ## Libraries
 Nodejs crypto module
