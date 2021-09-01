@@ -2,6 +2,7 @@ import { FormEvent, useState, ReactElement, Dispatch, SetStateAction } from "rea
 
 interface Props {
   createNewWallet: (username: string, deposit:number) => void;
+  availBal: number;
 }
 
 interface SetValues {
@@ -9,7 +10,7 @@ interface SetValues {
 }
 
 const NewWalletForm = (props: Props): ReactElement => {
-  const { createNewWallet } = props;
+  const { createNewWallet, availBal } = props;
   const [username, setUsername] = useState('');
   const [deposit, setDeposit] = useState('');
   const setValues: SetValues = {
@@ -27,10 +28,12 @@ const NewWalletForm = (props: Props): ReactElement => {
     return true;
   }
 
-  const validateDeposit = (deposit: number): boolean => {
-    if (isNaN(deposit) || deposit <= 0) return false;
-    // add validation for genesis total amount
-    return true;
+  const validateDeposit = (deposit: number): [boolean, number?] => {
+    // check that deposit is a positive number or 0
+    if (isNaN(deposit) || deposit < 0) return [false, 0];
+    // check that deposit is less than or equal to the amount left in genesis
+    if (deposit > availBal) return [false, 1];
+    return [true];
   };
 
   const onSubmit = () => {
@@ -40,8 +43,13 @@ const NewWalletForm = (props: Props): ReactElement => {
     }
 
     const numDep = Number(deposit);
-    if (!validateDeposit(numDep)) {
-      alert('Enter a positive number for your deposit');
+    const [isValid, errCode] = validateDeposit(numDep);
+    if (!isValid && errCode === 0) {
+      alert('Enter a positive number or 0 for your deposit');
+      return;
+    }
+    if (!isValid && errCode === 1) {
+      alert('Deposit must be less than or equal to remainder in Genesis');
       return;
     }
 

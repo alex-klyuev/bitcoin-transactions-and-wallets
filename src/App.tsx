@@ -2,6 +2,7 @@
 import React from 'react';
 // components
 import NewWalletForm from './components/NewWalletForm';
+import GenesisView from './components/GenesisView';
 import Wallet from './components/Wallet';
 import AddressList from './components/AddressList';
 // classes
@@ -14,9 +15,11 @@ import generateWallet from './functions/generateWallet';
 // types
 import { WalletTracker } from './types';
 
+
 interface Props { }
 
 interface State {
+  genesis: Genesis;
   walletTracker: WalletTracker;
   addressList: string[];
   transactions: Transaction[];
@@ -28,25 +31,22 @@ class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    // create instance of Genesis and use it to create initial
-    // state properties
+    // create instance of Genesis and the genesisUTXO
     const genesis = new Genesis();
-    const {
-      initWalletTracker,
-      initAddressList,
-      genesisUTXO
-    } = genesis.initState();
+    const genesisUTXO = genesis.UTXO;
 
     // state management
     this.state = {
+      genesis,
+
       // wallet and address manager
       // in our top level component, we want to hold reference to all wallets
       // and their associated addresses and key pairs.
       // in reality, the private key would be securely stored by the user,
       // but we'll keep it here to start for the purposes of simulating the
       // Bitcoin transaction verification and chaining design at a high level
-      walletTracker: initWalletTracker,
-      addressList: initAddressList,
+      walletTracker: {},
+      addressList: [],
 
       // transaction chain manager
       // these properties simulate what the Bitcoin Network would keep
@@ -86,6 +86,8 @@ class App extends React.Component<Props, State> {
     addressList.push(address);
     addressList = [...addressList];
 
+    // have genesis deposit the target funds
+
     this.setState({
       walletTracker,
       addressList
@@ -93,21 +95,27 @@ class App extends React.Component<Props, State> {
   };
 
   render() {
-    const { walletTracker, addressList } = this.state;
+    const {
+      walletTracker,
+      addressList,
+      genesis
+    } = this.state;
     const { createNewWallet } = this;
 
     return (
       <div>
-        <NewWalletForm createNewWallet={createNewWallet} />
-        {
-          addressList.map((address) => {
-            const wallet = {
-              address,
-              ...walletTracker[address]
-            };
-            return <Wallet key={address} wallet={wallet} />
-          })
-        }
+        <NewWalletForm
+          createNewWallet={createNewWallet}
+          availBal={genesis.balance()}
+        />
+        <GenesisView genesis={genesis} />
+        {addressList.map((address) => {
+          const wallet = {
+            address,
+            ...walletTracker[address]
+          };
+          return <Wallet key={address} wallet={wallet} />
+        })}
         <AddressList addressList={addressList} />
       </div >
     );
