@@ -40,7 +40,8 @@ const App = (): ReactElement => {
   const [walletTracker, setWalletTracker] = useState<WalletTracker>(initWalletTracker);
   const [addressList, setAddressList] = useState<string[]>(initAddressList);
 
-  // handlers
+  // handler for when user creates new wallet
+  // form validates so this is only called with valid inputs
   const createNewWallet = (username: string, deposit:number): void => {
     // generate pub-priv key pair and address
     const {
