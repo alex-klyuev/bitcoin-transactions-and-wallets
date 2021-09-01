@@ -29,7 +29,7 @@ const App = (): ReactElement => {
   const [addressList, setAddressList] = useState<string[]>(initAddressList);
 
   // handlers
-  const createNewWallet = (username: string): void => {
+  const createNewWallet = (username: string, deposit:number): void => {
     // generate pub-priv key pair and address
     const {
       address,
