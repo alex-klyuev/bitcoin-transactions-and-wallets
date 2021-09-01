@@ -2,8 +2,8 @@
 interface WalletTracker {
   [index: string]: {
     username: string;
-    pubKey: string;
-    privKey: string;
+    publicKey: string;
+    privateKey: string;
   }
 }
 

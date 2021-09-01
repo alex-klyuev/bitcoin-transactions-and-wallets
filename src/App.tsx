@@ -1,48 +1,70 @@
 // lib
-import { ReactElement, useState } from 'react';
+import React from 'react';
 // components
 import NewWalletForm from './components/NewWalletForm';
-import UserWalletInterface from './components/UserWalletInterface';
+import Wallet from './components/Wallet';
 import AddressList from './components/AddressList';
 // classes
-import TransactionChain from './classes/TransactionChain';
+import TXInput from './classes/TXInput';
+import TXOutput from './classes/TXOutput';
+import Transaction from './classes/Transaction';
+import Genesis from './classes/Genesis';
 // functions
 import generateWallet from './functions/generateWallet';
-import createGenesis from './functions/createGenesis';
 // types
-import  { WalletTracker } from './types';
+import { WalletTracker } from './types';
 
+interface Props { }
 
-// generate Genesis Wallet once upon start
-const {
-  initWalletTracker,
-  initAddressList,
-  genesisUTXO
-} = createGenesis();
+interface State {
+  walletTracker: WalletTracker;
+  addressList: string[];
+  transactions: Transaction[];
+  UTXOSet: TXOutput[];
+}
 
-// generate one Transaction Chain instance upon start that will be used
-// during this session (i.e. until page reload, etc.)
-const Chain = new TransactionChain();
-// add the genesis UTXO to the UTXO set as the first UTXO
-// from which all transactions will propogate
-Chain.UTXOSet.push(genesisUTXO);
+class App extends React.Component<Props, State> {
 
-console.log(Chain);
+  constructor(props: Props) {
+    super(props);
 
-const App = (): ReactElement => {
-  // state management
+    // create instance of Genesis and use it to create initial
+    // state properties
+    const genesis = new Genesis();
+    const {
+      initWalletTracker,
+      initAddressList,
+      genesisUTXO
+    } = genesis.initState();
 
-  // in our top level component, we want to hold reference to all wallets
-  // and their associated addresses and key pairs.
-  // in reality, the private key would be securely stored by the user,
-  // but we'll keep it here to start for the purposes of simulating the
-  // Bitcoin transaction verification and chaining design at a high level
-  const [walletTracker, setWalletTracker] = useState<WalletTracker>(initWalletTracker);
-  const [addressList, setAddressList] = useState<string[]>(initAddressList);
+    // state management
+    this.state = {
+      // wallet and address manager
+      // in our top level component, we want to hold reference to all wallets
+      // and their associated addresses and key pairs.
+      // in reality, the private key would be securely stored by the user,
+      // but we'll keep it here to start for the purposes of simulating the
+      // Bitcoin transaction verification and chaining design at a high level
+      walletTracker: initWalletTracker,
+      addressList: initAddressList,
+
+      // transaction chain manager
+      // these properties simulate what the Bitcoin Network would keep
+      // track of - all transactions in the network, and the UTXO set
+      // In this app, the verification functionality of the consensus
+      // network is abstracted away by the functionality of the App
+      // component, but cryptographic verification of ownership is
+      // still verified (move this comment to corresponding functions)
+      transactions: [],
+      UTXOSet: [genesisUTXO],
+    }
+
+    this.createNewWallet = this.createNewWallet.bind(this);
+  }
 
   // handler for when user creates new wallet
   // form validates so this is only called with valid inputs
-  const createNewWallet = (username: string, deposit:number): void => {
+  createNewWallet(username: string, deposit: number): void {
     // generate pub-priv key pair and address
     const {
       address,
@@ -50,32 +72,46 @@ const App = (): ReactElement => {
       privateKey
     } = generateWallet();
 
+    let { walletTracker, addressList } = this.state;
+
     // add to wallet tracker
     walletTracker[address] = {
       username,
-      pubKey: publicKey,
-      privKey: privateKey
+      publicKey,
+      privateKey
     }
-    setWalletTracker({ ...walletTracker });
+    walletTracker = { ...walletTracker };
 
     // add address to list
     addressList.push(address);
-    setAddressList([...addressList]);
+    addressList = [...addressList];
+
+    this.setState({
+      walletTracker,
+      addressList
+    });
   };
 
-  return (
-    <div>
-      <NewWalletForm createNewWallet={createNewWallet} />
-      {addressList.map((address) => {
-        const wallet = {
-          address,
-          ...walletTracker[address]
-        };
-        return < UserWalletInterface key={address} wallet={wallet} />
-      })}
-      <AddressList addressList={addressList} />
-    </div>
-  );
-};
+  render() {
+    const { walletTracker, addressList } = this.state;
+    const { createNewWallet } = this;
+
+    return (
+      <div>
+        <NewWalletForm createNewWallet={createNewWallet} />
+        {
+          addressList.map((address) => {
+            const wallet = {
+              address,
+              ...walletTracker[address]
+            };
+            return <Wallet key={address} wallet={wallet} />
+          })
+        }
+        <AddressList addressList={addressList} />
+      </div >
+    );
+  };
+}
 
 export default App;

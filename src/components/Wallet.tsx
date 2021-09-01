@@ -1,12 +1,9 @@
 import { ReactElement } from 'react';
+// types
+import { Wallet } from '../types';
 
 interface Props {
-  wallet: {
-    address: string;
-    username: string;
-    pubKey: string;
-    privKey: string;
-  }
+  wallet: Wallet;
 }
 
 // This component should be created for every user that creates a wallet,
@@ -15,8 +12,8 @@ const UserWalletInterface = (props: Props): ReactElement => {
   const {
     address,
     username,
-    pubKey,
-    privKey
+    publicKey,
+    privateKey
   } = props.wallet;
 
   return (

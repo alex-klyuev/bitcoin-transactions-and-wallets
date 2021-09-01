@@ -9,35 +9,48 @@ import { WalletTracker } from '../types';
 // could be a good opportunity to reuse some functionality / use subclassing,
 // but let's build out the functionality first
 class Genesis {
+  username: string;
+  address: string;
+  publicKey: string;
+  privateKey: string;
 
   constructor() {
-    /* const createGenesis = (): Genesis => {
+    const {
+      address,
+      publicKey,
+      privateKey
+    } = generateWallet();
 
-      // genesis wallet info
-      const initWalletTracker: WalletTracker = {};
-      const initAddressList: string[] = [];
-      const genesis = generateWallet();
+    this.username = 'Genesis';
+    this.address = address;
+    this.publicKey = publicKey;
+    this.privateKey = privateKey;
+  }
 
-      initWalletTracker[genesis.address] = {
-        username: 'Genesis',
-        pubKey: genesis.publicKey,
-        privKey: genesis.privateKey
-      };
+  initState() {
+    // genesis wallet info
+    const initWalletTracker: WalletTracker = {};
+    const initAddressList: string[] = [];
 
-      initAddressList.push(genesis.address);
+    initWalletTracker[this.address] = {
+      username: this.username,
+      publicKey: this.publicKey,
+      privateKey: this.privateKey
+    };
 
-      // genesis UTXO
-      // create random txid hash
-      const hash = createHash('sha256');
-      const txid = hash.update('').digest('hex');
-      const genesisUTXO = new TXOutput(txid, genesis.address, 21);
+    initAddressList.push(this.address);
 
-      return {
-        initWalletTracker,
-        initAddressList,
-        genesisUTXO
-      };
-    }; */
+    // genesis UTXO
+    // create random txid hash
+    const hash = createHash('sha256');
+    const txid = hash.update('').digest('hex');
+    const genesisUTXO = new TXOutput(txid, this.address, 21);
+
+    return {
+      initWalletTracker,
+      initAddressList,
+      genesisUTXO
+    }
   }
 }
 
