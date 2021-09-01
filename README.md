@@ -57,6 +57,10 @@ This chain will be modeled as a Doubly Linked List in this implementation, while
 Nodejs crypto module <br>
 key-encoder
 
+## Usage
+npm install
+npm start
+
 ## References
 https://github.com/bitcoinbook/bitcoinbook, especially Chapters 4 and 6
 https://developer.bitcoin.org/devguide/block_chain.html
