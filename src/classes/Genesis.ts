@@ -14,6 +14,9 @@ class Genesis {
   publicKey: string;
   privateKey: string;
 
+  // Genesis will always have to keep track of its 1 current UTXO
+  UTXO: TXOutput;
+
   constructor() {
     const {
       address,
@@ -25,6 +28,12 @@ class Genesis {
     this.address = address;
     this.publicKey = publicKey;
     this.privateKey = privateKey;
+
+    // genesis UTXO
+    // create random txid hash
+    const hash = createHash('sha256');
+    const txid = hash.update('').digest('hex');
+    this.UTXO = new TXOutput(txid, this.address, 21);
   }
 
   initState() {
@@ -40,17 +49,19 @@ class Genesis {
 
     initAddressList.push(this.address);
 
-    // genesis UTXO
-    // create random txid hash
-    const hash = createHash('sha256');
-    const txid = hash.update('').digest('hex');
-    const genesisUTXO = new TXOutput(txid, this.address, 21);
-
     return {
       initWalletTracker,
       initAddressList,
-      genesisUTXO
+      genesisUTXO: this.UTXO
     }
+  }
+
+  balance() {
+    return this.UTXO.value;
+  }
+
+  deposit(address: string, value: number) {
+
   }
 }
 
