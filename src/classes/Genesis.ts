@@ -1,4 +1,4 @@
-import { createHash } from 'crypto';
+import { createHash, createSign } from 'crypto';
 import generateWallet from '../functions/generateWallet';
 import TXOutput from './TXOutput';
 
@@ -38,8 +38,29 @@ class Genesis {
     return this.UTXO.value;
   }
 
+  // builds a transaction
   deposit(address: string, value: number) {
+    // 1 input which is current UTXO
+    const inputTXID = this.UTXO.txid;
+    // 2 outputs: to user and back to Genesis
 
+    // hash the input tx hash with the recipient address
+    const hashFunction1 = createHash('sha256');
+    hashFunction1.update(inputTXID);
+    hashFunction1.update(address);
+    const midHash = hashFunction1.digest('hex');
+
+    // sign the hash
+    const sign = createSign('sha256');
+    sign.update(midHash);
+    sign.end();
+    const sig = sign.sign(this.privateKey, 'hex');
+
+    // hash signature to convert into TXID format
+    const hashFunction2 = createHash('sha256');
+    const outputTXID = hashFunction2.update(sig).digest('hex');
+
+    // update UTXO pointer
   }
 }
 

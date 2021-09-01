@@ -73,6 +73,7 @@ class App extends React.Component<Props, State> {
     } = generateWallet();
 
     let { walletTracker, addressList } = this.state;
+    const { genesis } = this.state;
 
     // add to wallet tracker
     walletTracker[address] = {
@@ -87,6 +88,9 @@ class App extends React.Component<Props, State> {
     addressList = [...addressList];
 
     // have genesis deposit the target funds
+    if (deposit > 0) {
+      genesis.deposit(address, deposit);
+    }
 
     this.setState({
       walletTracker,
