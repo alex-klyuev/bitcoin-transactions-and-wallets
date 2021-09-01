@@ -7,15 +7,8 @@ import AddressList from './components/AddressList';
 // functions
 import generateWallet from './functions/generateWallet';
 import createGenesis from './functions/createGenesis';
-
-// addresses are stored as key values for quick lookup
-interface WalletTracker {
-  [index: string]: {
-    username: string;
-    pubKey: string;
-    privKey: string;
-  }
-}
+// types
+import  { WalletTracker } from './types';
 
 // generate Genesis Wallet once upon start
 const {

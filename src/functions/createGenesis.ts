@@ -1,14 +1,8 @@
 import { createHash } from 'crypto';
 import generateWallet from './generateWallet';
 import TXOutput from '../classes/TXOutput';
-
-interface WalletTracker {
-  [index: string]: {
-    username: string;
-    pubKey: string;
-    privKey: string;
-  }
-}
+// types
+import { WalletTracker } from '../types';
 
 interface Genesis {
   initWalletTracker: WalletTracker;

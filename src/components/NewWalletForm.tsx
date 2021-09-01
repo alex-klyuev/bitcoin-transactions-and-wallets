@@ -25,6 +25,11 @@ const NewWalletForm = (props: Props): ReactElement => {
         value={value}
         onChange={onChange}
       />
+      {/*<div>Deposit amount</div>
+      <input
+        value={value}
+        onChange={onChange}
+      />*/}
       <div>
         <button onClick={onSubmit}>Submit</button>
       </div>
