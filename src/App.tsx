@@ -6,6 +6,7 @@ import UserWalletInterface from './components/UserWalletInterface';
 import AddressList from './components/AddressList';
 // functions
 import generateWallet from './functions/generateWallet';
+import createGenesis from './functions/createGenesis';
 
 // addresses are stored as key values for quick lookup
 interface WalletTracker {
@@ -17,17 +18,11 @@ interface WalletTracker {
 }
 
 // generate Genesis Wallet once upon start
-const initWalletTracker: WalletTracker = {};
-const initAddressList: string[] = [];
-const genesis = generateWallet();
-
-initWalletTracker[genesis.address] = {
-  username: 'Genesis',
-  pubKey: genesis.publicKey,
-  privKey: genesis.privateKey
-};
-
-initAddressList.push(genesis.address);
+const {
+  initWalletTracker,
+  initAddressList,
+  genesisUTXO
+} = createGenesis();
 
 const App = (): ReactElement => {
   // state management
