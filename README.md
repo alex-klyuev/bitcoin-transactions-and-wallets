@@ -54,7 +54,7 @@ UTXOs are unspent transaction outputs, and are also referenced from user wallet 
 This chain will be modeled as a Doubly Linked List in this implementation, while using hashing to create unique, irreversible, and verifiable transaction chains.
 
 ## Libraries
-Nodejs crypto module
+Nodejs crypto module <br>
 key-encoder
 
 ## References
