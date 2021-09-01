@@ -4,11 +4,14 @@ import { ReactElement, useState } from 'react';
 import NewWalletForm from './components/NewWalletForm';
 import UserWalletInterface from './components/UserWalletInterface';
 import AddressList from './components/AddressList';
+// classes
+import TransactionChain from './classes/TransactionChain';
 // functions
 import generateWallet from './functions/generateWallet';
 import createGenesis from './functions/createGenesis';
 // types
 import  { WalletTracker } from './types';
+
 
 // generate Genesis Wallet once upon start
 const {
@@ -16,6 +19,15 @@ const {
   initAddressList,
   genesisUTXO
 } = createGenesis();
+
+// generate one Transaction Chain instance upon start that will be used
+// during this session (i.e. until page reload, etc.)
+const Chain = new TransactionChain();
+// add the genesis UTXO to the UTXO set as the first UTXO
+// from which all transactions will propogate
+Chain.UTXOSet.push(genesisUTXO);
+
+console.log(Chain);
 
 const App = (): ReactElement => {
   // state management
@@ -38,7 +50,6 @@ const App = (): ReactElement => {
     } = generateWallet();
 
     // add to wallet tracker
-
     walletTracker[address] = {
       username,
       pubKey: publicKey,

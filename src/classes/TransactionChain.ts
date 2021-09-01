@@ -8,10 +8,11 @@ interface Transaction {
 
 class TransactionChain {
   transactions: Transaction[];
+  UTXOSet: TXOutput[];
   constructor() {
     this.transactions = [];
+    this.UTXOSet = [];
   }
-
 }
 
 export default TransactionChain;
