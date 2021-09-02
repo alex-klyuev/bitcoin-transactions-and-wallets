@@ -57,6 +57,8 @@ This chain will be modeled as a Doubly Linked List in this implementation, while
 Nodejs crypto module
 <br>
 key-encoder
+<br>
+styled-components
 
 ## Usage
 npm install

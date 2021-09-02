@@ -1,5 +1,14 @@
 import { ReactElement } from "react";
-import Genesis from "../classes/Genesis";
+import styled from 'styled-components';
+import Genesis from '../classes/Genesis';
+
+const Wrap = styled.div`
+  word-wrap: break-word;
+`;
+
+const Space = styled.div`
+  height: 10px;
+`;
 
 interface Props {
   genesis: Genesis
@@ -13,7 +22,8 @@ const GenesisView = (props: Props): ReactElement => {
   return (
     <div>
       <h4>{username}</h4>
-      <div>Address: {address}</div>
+      <Wrap>Address: {address}</Wrap>
+      <Space></Space>
       <div>Balance: {balance}</div>
     </div>
   );

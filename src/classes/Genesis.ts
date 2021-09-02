@@ -32,15 +32,15 @@ class Genesis {
     // create random txid hash
     const hash = createHash('sha256');
     const txid = hash.update('').digest('hex');
-    this.UTXO = new TXOutput(txid, this.address, 21);
+    this.UTXO = new TXOutput(txid, this.address, 21000000);
   }
 
-  balance() {
+  balance(): number {
     return this.UTXO.value;
   }
 
   // builds a transaction
-  deposit(address: string, value: number) {
+  deposit(address: string, value: number): Transaction {
     // 1 input which is current UTXO
     const inputTXID = this.UTXO.txid;
     // 2 outputs: to user and back to Genesis
@@ -88,6 +88,9 @@ class Genesis {
 
     // update UTXO pointer
     this.UTXO = newGenesisUTXO;
+
+    // return the transaction so it can be added to the state
+    return transaction;
   }
 }
 

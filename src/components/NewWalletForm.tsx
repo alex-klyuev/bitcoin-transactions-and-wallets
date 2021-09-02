@@ -30,7 +30,7 @@ const NewWalletForm = (props: Props): ReactElement => {
 
   const validateDeposit = (deposit: number): [boolean, number?] => {
     // check that deposit is a positive number or 0
-    if (isNaN(deposit) || deposit < 0) return [false, 0];
+    if (isNaN(deposit) || deposit < 0 || deposit % 1 !== 0) return [false, 0];
     // check that deposit is less than or equal to the amount left in genesis
     if (deposit > availBal) return [false, 1];
     return [true];
@@ -45,7 +45,7 @@ const NewWalletForm = (props: Props): ReactElement => {
     const numDep = Number(deposit);
     const [isValid, errCode] = validateDeposit(numDep);
     if (!isValid && errCode === 0) {
-      alert('Enter a positive number or 0 for your deposit');
+      alert('Enter a positive integer or 0 for your deposit');
       return;
     }
     if (!isValid && errCode === 1) {
