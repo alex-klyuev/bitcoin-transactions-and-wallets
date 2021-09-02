@@ -10,7 +10,7 @@ import AddressList from './components/AddressList';
 // classes
 import { Transaction, Genesis } from './classes';
 // functions
-import generateWallet from './functions/generateWallet';
+import { generateWallet } from './functions';
 // types
 import { UTXOSet, WalletTracker } from './types';
 
@@ -242,6 +242,8 @@ class App extends React.Component<Props, State> {
     this.setState({
       UTXOSet: { ...UTXOSet },
       transactions: [...transactions]
+    }, () => {
+      console.log(this.state);
     });
   }
 

@@ -1,5 +1,5 @@
 import { createHash, createSign } from 'crypto';
-import generateWallet from '../functions/generateWallet';
+import { generateWallet } from '../functions';
 import { TXInput, TXOutput, Transaction } from './';
 
 // Genesis is going to have similar functionality to a normal wallet,
@@ -44,8 +44,10 @@ class Genesis {
 
   // builds a transaction
   deposit(address: string, value: number): Transaction {
-    // 1 input which is current UTXO
-    const inputTXID = this.UTXO.txid;
+
+    // build the inputs - in this case, just the 1 input which is current UTXO
+    const inputTXID = this.UTXO.txid; // not going to need this
+    const inputs = [new TXInput(this.UTXO)];
     // 2 outputs: to user and back to Genesis
 
     // hash the inputs - in our case only one, but must follow the protocol
@@ -91,9 +93,8 @@ class Genesis {
     );
 
     // create the transaction
-    const input = new TXInput(this.UTXO);
     const transaction = new Transaction();
-    transaction.inputs.push(input);
+    transaction.inputs = inputs;
     transaction.outputs.push(userUTXO, newGenesisUTXO);
 
     // sign own address and attach pubkey and sig to transaction for verification
