@@ -1,7 +1,7 @@
 import { Dispatch, FormEvent, ReactElement, SetStateAction, useState } from 'react';
 import styled from 'styled-components';
 import { Transaction, TXOutput } from '../classes';
-import { findUTXOsForTransaction, buildTransactionFromUTXOs } from '../functions';
+import { balance, findUTXOsForTransaction, buildTransactionFromUTXOs } from '../functions';
 // types
 import { UTXOSet, Wallet } from '../types';
 
@@ -119,7 +119,7 @@ const UserWalletInterface = (props: Props): ReactElement => {
       <h4>Username: {username}</h4>
       <Wrap>Address: {address}</Wrap>
       <Space></Space>
-      <div>Balance:</div>
+      <div>Balance: {balance(address, UTXOSet)}</div>
       <h4>Send Money:</h4>
       <div>Address</div>
       <input
