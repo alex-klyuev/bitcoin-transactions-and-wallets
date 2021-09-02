@@ -185,13 +185,38 @@ class App extends React.Component<Props, State> {
     //    a. verify hashes and signature of each output
     //    b. total value must be equal to or less than input total
 
+    // first, must generate the hash of all the inputs
+    // this is done by hashing the inputs in the order they appear (order matters)
+    // this would be our "protocol" that all network participants would follow;
+    // transaction builders and validators would validate hashes only if
+    // hashed in the order they appear in the transaction
+    const inputHashFunction = createHash('sha256');
+    inputs.forEach((input) => inputHashFunction.update(input.txid));
+    const inputHash = inputHashFunction.digest('hex');
+
     // in this app, users will only have 1-2 outputs per tx,
     // but in reality a user could make many outputs at once
     for (let i = 0; i < outputs.length; i++) {
-      const output = outputs[i];
-
-      // i think i'll have to repeat the input hashing procedure including
-      // for multiple inputs
+      const {
+        address,
+        sig,
+        txid
+      } = outputs[i];
+      // hash input hash with recipient address
+      const midHashFunction = createHash('sha256');
+      midHashFunction.update(inputHash);
+      midHashFunction.update(address);
+      const midHash = midHashFunction.digest('hex');
+      const verify = createVerify('sha256');
+      verify.update(midHash);
+      verify.end();
+      // verify the signature
+      const cond1 = verify.verify(publicKey, sig, 'hex');
+      const outputHashFunction = createHash('sha256');
+      const outputHash = outputHashFunction.update(sig).digest('hex');
+      // verify that we arrive at the same final hash
+      const cond2 = txid === outputHash;
+      if (!(cond1 && cond2)) return false;
     }
 
     return true;

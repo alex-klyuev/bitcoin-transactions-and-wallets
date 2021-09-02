@@ -48,11 +48,16 @@ class Genesis {
     const inputTXID = this.UTXO.txid;
     // 2 outputs: to user and back to Genesis
 
-    // hash the input tx hash with the recipient address
-    const hashFunction1 = createHash('sha256');
-    hashFunction1.update(inputTXID);
-    hashFunction1.update(address);
-    const midHash1 = hashFunction1.digest('hex');
+    // hash the inputs - in our case only one, but must follow the protocol
+    const inputHashFunction = createHash('sha256');
+    inputHashFunction.update(inputTXID);
+    const inputHash = inputHashFunction.digest('hex');
+
+    // hash the input hash with the recipient address
+    const midHashFunction1 = createHash('sha256');
+    midHashFunction1.update(inputHash);
+    midHashFunction1.update(address);
+    const midHash1 = midHashFunction1.digest('hex');
 
     // sign the hash
     const signFunction1 = createSign('sha256');
@@ -61,20 +66,20 @@ class Genesis {
     const sigToUser = signFunction1.sign(this.privateKey, 'hex');
 
     // hash signature to convert into TXID format
-    const hashFunction2 = createHash('sha256');
-    const outputUserTXID = hashFunction2.update(sigToUser).digest('hex');
+    const outputHashFunction1 = createHash('sha256');
+    const outputUserTXID = outputHashFunction1.update(sigToUser).digest('hex');
 
     // now repeat the process with the Genesis address for the second UTXO
-    const hashFunction3 = createHash('sha256');
-    hashFunction3.update(inputTXID);
-    hashFunction3.update(this.address);
-    const midHash2 = hashFunction3.digest('hex');
+    const midHashFunction2 = createHash('sha256');
+    midHashFunction2.update(inputHash);
+    midHashFunction2.update(this.address);
+    const midHash2 = midHashFunction2.digest('hex');
     const signFunction2 = createSign('sha256');
     signFunction2.update(midHash2);
     signFunction2.end();
     const sigToGen = signFunction2.sign(this.privateKey, 'hex');
-    const hashFunction4 = createHash('sha256');
-    const outputGenesisTXID = hashFunction4.update(sigToGen).digest('hex');
+    const outputHashFunction2 = createHash('sha256');
+    const outputGenesisTXID = outputHashFunction2.update(sigToGen).digest('hex');
 
     // create the two UTXOs
     const userUTXO = new TXOutput(outputUserTXID, address, sigToUser, value);
