@@ -35,9 +35,16 @@ const buildTransactionFromUTXOs = (
   signFunction1.end();
   const sigToRecipient = signFunction1.sign(senderPrivateKey, 'hex');
 
-  // hash signature to convert into TXID format
+  // hash signature with output index
+  // this serves two purposes: to convert into TXID format and to avoid
+  // txid collisions when sending mulitple outputs to the same address
+  // in our case we'll only have two output indices but this could easily
+  // be extrapolated to multiple outputs
   const outputHashFunction1 = createHash('sha256');
-  const outputRecipientTXID = outputHashFunction1.update(sigToRecipient).digest('hex');
+  const outputRecipientTXID = outputHashFunction1
+    .update(sigToRecipient)
+    .update('0')
+    .digest('hex');
 
   // create UTXO and push to outputs
   const recipientUTXO = new TXOutput(
@@ -61,7 +68,10 @@ const buildTransactionFromUTXOs = (
     signFunction2.end();
     const sigToChange = signFunction2.sign(senderPrivateKey, 'hex');
     const outputHashFunction2 = createHash('sha256');
-    const outputChangeTXID = outputHashFunction2.update(sigToChange).digest('hex');
+    const outputChangeTXID = outputHashFunction2
+      .update(sigToChange)
+      .update('1')
+      .digest('hex');
     const changeUTXO = new TXOutput(
       outputChangeTXID,
       senderAddress,
@@ -75,6 +85,7 @@ const buildTransactionFromUTXOs = (
   const transaction = new Transaction();
   transaction.inputs = inputs;
   transaction.outputs = outputs;
+  console.log(transaction.outputs);
 
   // sign own address and attach pubkey and sig to transaction for verification
   transaction.publicKey = senderPublicKey;

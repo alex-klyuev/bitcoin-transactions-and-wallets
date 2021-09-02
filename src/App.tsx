@@ -211,9 +211,13 @@ class App extends React.Component<Props, State> {
       verify.end();
       // verify the signature
       const cond1 = verify.verify(publicKey, sig, 'hex');
-      const outputHashFunction = createHash('sha256');
-      const outputHash = outputHashFunction.update(sig).digest('hex');
       // verify that we arrive at the same final hash
+      const outputHashFunction = createHash('sha256');
+      const outputHash = outputHashFunction
+        .update(sig)
+        .update(i.toString())
+        .digest('hex');
+
       const cond2 = txid === outputHash;
       if (!(cond1 && cond2)) return false;
       outputVal += value;
