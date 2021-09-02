@@ -49,9 +49,16 @@ UTXOs are unspent transaction outputs, and are also referenced from user wallet 
 
 ### Verification
 
-### Transaction Chain
+There are two components to a transactoin that must be verified by the chain:
+1. Users who want to use UTXO's as inputs to transactions actually own those UTXOs
+2. Transactions are sent by who they are claimed to be sent by
 
-This chain will be modeled as a Doubly Linked List in this implementation, while using hashing to create unique, irreversible, and verifiable transaction chains.
+### UTXO
+In Bitcoin, this is accomplished via a locking/unlocking script, which is modeled by a Turing-incomplete scripting language.
+I adopted a simpler approach in this implementation: a user claiming a UTXO must present their public key and digitally sign their address. The chain verifies that the public key indeed corresponds to that address (the address is simply a hash of the public key) and verifies the signature.
+
+## Transaction Authenticity
+More similar to the Bitcoin implementation, a Bitcoin sender hashes together the input transaction hashes, the recipient's address, and digitally signs it. This can similarly be verified by anyone by using the sender's public key.
 
 ## Libraries
 Nodejs crypto module

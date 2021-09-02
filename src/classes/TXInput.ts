@@ -6,13 +6,11 @@ import TXOutput from "./TXOutput";
 class TXInput {
   txid: string;
   publicKey: string;
-  sig: string;
   value: number;
-  constructor(TXOutput: TXOutput, publicKey: string, sig: string) {
+  constructor(TXOutput: TXOutput, publicKey: string) {
     this.txid = TXOutput.txid;
     this.value = TXOutput.value;
     this.publicKey = publicKey;
-    this.sig = sig;
   }
 }
 

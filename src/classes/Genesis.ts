@@ -34,7 +34,7 @@ class Genesis {
     const sign = createSign('sha256');
     sign.update(txid);
     sign.end();
-    const sig = sign.sign(this.publicKey, 'hex');
+    const sig = sign.sign(this.privateKey, 'hex');
     this.UTXO = new TXOutput(txid, this.address, sig, 21000000);
   }
 
@@ -86,11 +86,17 @@ class Genesis {
     );
 
     // create the transaction
-    // START HERE - CONFIRMING UTXO OWNERSHIP...
     const input = new TXInput(this.UTXO, this.publicKey);
     const transaction = new Transaction();
     transaction.inputs.push(input);
     transaction.outputs.push(userUTXO, newGenesisUTXO);
+
+    // sign own address and attach pubkey and sig to transaction for verification
+    transaction.publicKey = this.publicKey;
+    const signTransaction = createSign('sha256');
+    signTransaction.update(this.address);
+    signTransaction.end();
+    transaction.signature = signTransaction.sign(this.privateKey, 'hex');
 
     // update UTXO pointer
     this.UTXO = newGenesisUTXO;

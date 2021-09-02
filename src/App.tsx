@@ -1,6 +1,7 @@
 // lib
 import React from 'react';
 import styled from 'styled-components';
+import { createHash, createVerify } from 'crypto';
 // components
 import NewWalletForm from './components/NewWalletForm';
 import GenesisView from './components/GenesisView';
@@ -12,7 +13,7 @@ import { TXInput, TXOutput, Transaction, Genesis } from './classes';
 import generateWallet from './functions/generateWallet';
 // types
 import { UTXOSet, WalletTracker } from './types';
-import { ReactNode } from 'react';
+
 
 const Container = styled.div`
   display: flex;
@@ -131,23 +132,47 @@ class App extends React.Component<Props, State> {
   // the verification is here. if valid, the transaction is added to the chain of
   // valid transactions and updates the UTXO set, which is done in the following function
 
+  // similar to Bitcoin (I think), there won't be any specific error codes:
+  // the transaction is either accepted or declined in its entirety.
+  // only once every aspect is verified do we update the UTXOSet
   verifyTransaction(transaction: Transaction): boolean {
+    const { UTXOSet } = this.state;
+    const {
+      inputs,
+      outputs,
+      publicKey,
+      signature
+    } = transaction;
 
     // 1: Verify inputs. This is done in 2 parts:
     // a: verify that inputs are in the UTXO set (avoid double-spend)
     // b: verify that user has access to UTXOs as claimed
-    const { UTXOSet } = this.state;
-    const  { inputs } = transaction;
     // make sure user isn't trying to use same UTXO twice in one tx
     const UTXOTracker = new Set();
 
+    // must confirm each input individually
     for (let i = 0; i < inputs.length; i++) {
       const { txid } = inputs[i];
-      // verify that UTXO is in the set and isn't being reused
+      // a. verify that UTXO is in the set and isn't being reused
       if (!UTXOSet[txid] || UTXOTracker.has(txid)) return false;
 
       // if not, add to the tracker
       UTXOTracker.add(txid);
+
+      // verify ownership of that UTXO
+      // i. verify that user public key hashes to address
+      const addressVerifyHash = createHash('sha256');
+      const addressVerify = addressVerifyHash.update(publicKey).digest('hex');
+      const UTXOAddress = UTXOSet[txid].address;
+      const cond1 = addressVerify === UTXOAddress;
+
+      // ii. verify that signature corresponds to the same public key
+      // that forms the address
+      const verify = createVerify('sha256');
+      verify.update(UTXOAddress);
+      verify.end();
+      const cond2 = verify.verify(publicKey, signature, 'hex');
+      if (!(cond1 && cond2)) return false;
     }
 
     return true;
@@ -157,7 +182,7 @@ class App extends React.Component<Props, State> {
 
   }
 
-  render(): ReactNode {
+  render() {
     const {
       walletTracker,
       addressList,
