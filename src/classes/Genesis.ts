@@ -91,7 +91,7 @@ class Genesis {
     );
 
     // create the transaction
-    const input = new TXInput(this.UTXO, this.publicKey);
+    const input = new TXInput(this.UTXO);
     const transaction = new Transaction();
     transaction.inputs.push(input);
     transaction.outputs.push(userUTXO, newGenesisUTXO);
