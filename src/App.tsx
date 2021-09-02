@@ -8,7 +8,7 @@ import GenesisView from './components/GenesisView';
 import Wallet from './components/Wallet';
 import AddressList from './components/AddressList';
 // classes
-import { Transaction, Genesis, Queue } from './classes';
+import { Transaction, Genesis } from './classes';
 // functions
 import generateWallet from './functions/generateWallet';
 // types
@@ -30,15 +30,7 @@ interface State {
   walletTracker: WalletTracker;
   addressList: string[];
   transactions: Transaction[];
-  UTXOSetByTXID: UTXOSet;
-
-  // usually, it would be the wallet's job to manage that user's
-  // UTXO state in a separate application. However, for this
-  // application I'll have a separate set that indexes by
-  // address for quick lookup by the wallet components
-  UTXOSetByAddress: {
-    [index: string]: UTXOSet
-  };
+  UTXOSet: UTXOSet;
 }
 
 class App extends React.Component<Props, State> {
@@ -49,11 +41,8 @@ class App extends React.Component<Props, State> {
     // create instance of Genesis and the genesisUTXO
     const genesis = new Genesis();
     const genesisUTXO = genesis.UTXO;
-    const UTXOSetByTXID: UTXOSet = {};
-    UTXOSetByTXID[genesisUTXO.txid] = genesisUTXO;
-    const UTXOSetByAddress: State['UTXOSetByAddress'] = {};
-    UTXOSetByAddress[genesisUTXO.address] = {};
-    UTXOSetByAddress[genesisUTXO.address][genesisUTXO.txid] = genesisUTXO;
+    const UTXOSet: UTXOSet = {};
+    UTXOSet[genesisUTXO.txid] = genesisUTXO;
 
     // state management
     this.state = {
@@ -76,8 +65,7 @@ class App extends React.Component<Props, State> {
       // component, but cryptographic verification of ownership is
       // still verified (move this comment to corresponding functions)
       transactions: [],
-      UTXOSetByTXID,
-      UTXOSetByAddress
+      UTXOSet,
     }
 
     this.createNewWallet = this.createNewWallet.bind(this);
@@ -89,7 +77,6 @@ class App extends React.Component<Props, State> {
     const {
       walletTracker,
       addressList,
-      UTXOSetByAddress,
       genesis
     } = this.state;
 
@@ -107,9 +94,8 @@ class App extends React.Component<Props, State> {
       privateKey
     };
 
-    // add address to list and UTXOSetByAddress
+    // add address to list
     addressList.push(address);
-    UTXOSetByAddress[address] = {};
 
     // have genesis deposit the target funds
     if (deposit > 0) {
@@ -119,8 +105,7 @@ class App extends React.Component<Props, State> {
 
     this.setState({
       walletTracker: { ...walletTracker },
-      addressList: [...addressList],
-      UTXOSetByAddress: { ...UTXOSetByAddress }
+      addressList: [...addressList]
     });
   };
 
@@ -143,7 +128,7 @@ class App extends React.Component<Props, State> {
   // the transaction is either accepted or declined in its entirety.
   // only once every aspect is verified do we update the UTXOSet
   verifyAndAddTransaction(transaction: Transaction): boolean {
-    const { UTXOSetByTXID } = this.state;
+    const { UTXOSet } = this.state;
     const {
       inputs,
       outputs,
@@ -164,11 +149,11 @@ class App extends React.Component<Props, State> {
     for (let i = 0; i < inputs.length; i++) {
       const { txid } = inputs[i];
       // a. verify that UTXO is in the set and isn't being reused
-      if (!UTXOSetByTXID[txid] || UTXOTracker.has(txid)) return false;
+      if (!UTXOSet[txid] || UTXOTracker.has(txid)) return false;
 
       // if not, add to the tracker and grab the UTXO for further verification
       UTXOTracker.add(txid);
-      const UTXO = UTXOSetByTXID[txid];
+      const UTXO = UTXOSet[txid];
 
       // verify ownership of that UTXO
       // i. verify that the user's public key hashes to the same address
@@ -239,30 +224,23 @@ class App extends React.Component<Props, State> {
 
   addTransactionToChain(transaction: Transaction): void {
     const {
-      UTXOSetByTXID,
-      UTXOSetByAddress,
+      UTXOSet,
       transactions
     } = this.state;
 
-    // grab the address from primary UTXO set before we delete it
-    const address = UTXOSetByTXID[transaction.inputs[0].txid].address;
-
-    // remove inputs from UTXOsets
+    // remove inputs from UTXOset
     transaction.inputs.forEach((input) => {
-      delete UTXOSetByTXID[input.txid];
-      delete UTXOSetByAddress[address][input.txid];
+      delete UTXOSet[input.txid];
     });
-    // add outputs to UTXOsets
+    // add outputs to UTXOset
     transaction.outputs.forEach((output) => {
-      UTXOSetByTXID[output.txid] = output;
-      UTXOSetByAddress[address][output.txid] = output;
+      UTXOSet[output.txid] = output;
     });
 
     // add tx to all tx list
     transactions.push(transaction);
     this.setState({
-      UTXOSetByTXID: { ...UTXOSetByTXID },
-      UTXOSetByAddress: { ...UTXOSetByAddress },
+      UTXOSet: { ...UTXOSet },
       transactions: [...transactions]
     });
   }
@@ -272,7 +250,7 @@ class App extends React.Component<Props, State> {
       walletTracker,
       addressList,
       genesis,
-      UTXOSetByAddress
+      UTXOSet
     } = this.state;
     const { createNewWallet } = this;
 
@@ -292,7 +270,7 @@ class App extends React.Component<Props, State> {
             return <Wallet
               key={address}
               wallet={wallet}
-              UTXOSet={UTXOSetByAddress[address]}
+              UTXOSet={UTXOSet}
             />
           })}
         </Block>
