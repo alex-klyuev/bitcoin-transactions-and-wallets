@@ -1,9 +1,9 @@
-import buildTransactionFromInputs from './buildTransactionFromInputs';
-import findInputsForTransaction from './findInputsForTransaction';
+import buildTransactionFromUTXOs from './buildTransactionFromUTXOs';
+import findUTXOsForTransaction from './findUTXOsForTransaction';
 import generateWallet from './generateWallet';
 
 export {
-  buildTransactionFromInputs,
-  findInputsForTransaction,
+  buildTransactionFromUTXOs,
+  findUTXOsForTransaction,
   generateWallet
 };

@@ -28,7 +28,7 @@ interface Props { }
 interface State {
   genesis: Genesis;
   walletTracker: WalletTracker;
-  addressList: string[];
+  addressList: Set<string>;
   transactions: Transaction[];
   UTXOSet: UTXOSet;
 }
@@ -55,7 +55,7 @@ class App extends React.Component<Props, State> {
       // but we'll keep it here to start for the purposes of simulating the
       // Bitcoin transaction verification and chaining design at a high level
       walletTracker: {},
-      addressList: [],
+      addressList: new Set(),
 
       // transaction chain manager
       // these properties simulate what the Bitcoin Network would keep
@@ -69,6 +69,7 @@ class App extends React.Component<Props, State> {
     }
 
     this.createNewWallet = this.createNewWallet.bind(this);
+    this.verifyAndAddTransaction = this.verifyAndAddTransaction.bind(this);
   }
 
   // handler for when user creates new wallet
@@ -95,7 +96,7 @@ class App extends React.Component<Props, State> {
     };
 
     // add address to list
-    addressList.push(address);
+    addressList.add(address);
 
     // have genesis deposit the target funds
     if (deposit > 0) {
@@ -105,7 +106,12 @@ class App extends React.Component<Props, State> {
 
     this.setState({
       walletTracker: { ...walletTracker },
-      addressList: [...addressList]
+      addressList: (() => {
+        // make a new set to trigger new state
+        const newSet: Set<string> = new Set();
+        addressList.forEach((address) => newSet.add(address))
+        return newSet;
+      })()
     });
   };
 
@@ -254,7 +260,9 @@ class App extends React.Component<Props, State> {
       genesis,
       UTXOSet
     } = this.state;
-    const { createNewWallet } = this;
+    const { createNewWallet, verifyAndAddTransaction } = this;
+
+    const addressListArray = Array.from(addressList);
 
     return (
       <Container>
@@ -264,7 +272,7 @@ class App extends React.Component<Props, State> {
             availBal={genesis.balance()}
           />
           <GenesisView genesis={genesis} />
-          {addressList.map((address) => {
+          {addressListArray.map((address) => {
             const wallet = {
               address,
               ...walletTracker[address]
@@ -273,6 +281,8 @@ class App extends React.Component<Props, State> {
               key={address}
               wallet={wallet}
               UTXOSet={UTXOSet}
+              addressList={addressList}
+              verifyAndAddTransaction={verifyAndAddTransaction}
             />
           })}
         </Block>

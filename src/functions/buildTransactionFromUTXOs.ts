@@ -1,20 +1,24 @@
 import { createHash, createSign } from "crypto";
-import { Transaction, TXOutput } from "../classes";
+import { Transaction, TXInput, TXOutput } from "../classes";
 
-const buildTransactionFromInputs = (
-  inputs: [TXOutput],
+// this function will take an array of UTXOs that the user wants to
+// use to build a transaction and return the transaction
+const buildTransactionFromUTXOs = (
+  inputUTXOs: TXOutput[],
   senderAddress: string,
   senderPrivateKey: string,
   senderPublicKey: string,
   recipientAddress: string,
   value: number
-) => {
-  // hash the inputs and compute total input val
+): Transaction => {
+  // compute total input val, hash the inputs, and create TXInputs
   let inputVal = 0;
+  const inputs: TXInput[] = [];
   const inputHashFunction = createHash('sha256');
-  inputs.forEach((input) => {
-    inputVal += input.value;
-    inputHashFunction.update(input.txid);
+  inputUTXOs.forEach((inputUTXO) => {
+    inputVal += inputUTXO.value;
+    inputHashFunction.update(inputUTXO.txid);
+    inputs.push(new TXInput(inputUTXO));
   });
   const inputHash = inputHashFunction.digest('hex');
 
@@ -71,6 +75,8 @@ const buildTransactionFromInputs = (
   signTransaction.update(senderAddress);
   signTransaction.end();
   transaction.signature = signTransaction.sign(senderPrivateKey, 'hex');
+
+  return transaction;
 };
 
-export default buildTransactionFromInputs;
+export default buildTransactionFromUTXOs;

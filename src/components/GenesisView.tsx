@@ -2,6 +2,12 @@ import { ReactElement } from "react";
 import styled from 'styled-components';
 import { Genesis } from '../classes';
 
+const Container = styled.div`
+  border-style: solid;
+  padding: 5px;
+  margin: 5px 0;
+`;
+
 const Wrap = styled.div`
   word-wrap: break-word;
 `;
@@ -20,12 +26,12 @@ const GenesisView = (props: Props): ReactElement => {
   const balance = genesis.balance();
 
   return (
-    <div>
+    <Container>
       <h4>{username}</h4>
       <Wrap>Address: {address}</Wrap>
       <Space></Space>
       <div>Balance: {balance}</div>
-    </div>
+    </Container>
   );
 };
 
