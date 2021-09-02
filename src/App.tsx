@@ -247,7 +247,8 @@ class App extends React.Component<Props, State> {
     const {
       walletTracker,
       addressList,
-      genesis
+      genesis,
+      UTXOSet
     } = this.state;
     const { createNewWallet } = this;
 
@@ -264,7 +265,11 @@ class App extends React.Component<Props, State> {
               address,
               ...walletTracker[address]
             };
-            return <Wallet key={address} wallet={wallet} />
+            return <Wallet
+              key={address}
+              wallet={wallet}
+              UTXOSet={UTXOSet}
+            />
           })}
         </Block>
         <Block>
