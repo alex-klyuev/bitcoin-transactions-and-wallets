@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import styled from 'styled-components';
-import Genesis from '../classes/Genesis';
+import { Genesis } from '../classes';
 
 const Wrap = styled.div`
   word-wrap: break-word;

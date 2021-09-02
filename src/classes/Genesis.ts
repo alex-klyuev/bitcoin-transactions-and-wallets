@@ -1,7 +1,6 @@
 import { createHash, createSign } from 'crypto';
 import generateWallet from '../functions/generateWallet';
-import TXOutput from './TXOutput';
-import Transaction from './Transaction';
+import { TXInput, TXOutput, Transaction } from './';
 
 // Genesis is going to have similar functionality to a normal wallet,
 // except it will lack a UI and have some extra functions.
@@ -31,8 +30,12 @@ class Genesis {
     // genesis UTXO
     // create random txid hash
     const hash = createHash('sha256');
-    const txid = hash.update('').digest('hex');
-    this.UTXO = new TXOutput(txid, this.address, 21000000);
+    const txid = hash.update(Math.random().toString()).digest('hex');
+    const sign = createSign('sha256');
+    sign.update(txid);
+    sign.end();
+    const sig = sign.sign(this.publicKey, 'hex');
+    this.UTXO = new TXOutput(txid, this.address, sig, 21000000);
   }
 
   balance(): number {
@@ -55,11 +58,11 @@ class Genesis {
     const signFunction1 = createSign('sha256');
     signFunction1.update(midHash1);
     signFunction1.end();
-    const sig1 = signFunction1.sign(this.privateKey, 'hex');
+    const sigToUser = signFunction1.sign(this.privateKey, 'hex');
 
     // hash signature to convert into TXID format
     const hashFunction2 = createHash('sha256');
-    const outputUserTXID = hashFunction2.update(sig1).digest('hex');
+    const outputUserTXID = hashFunction2.update(sigToUser).digest('hex');
 
     // now repeat the process with the Genesis address for the second UTXO
     const hashFunction3 = createHash('sha256');
@@ -69,21 +72,24 @@ class Genesis {
     const signFunction2 = createSign('sha256');
     signFunction2.update(midHash2);
     signFunction2.end();
-    const sig2 = signFunction2.sign(this.privateKey, 'hex');
+    const sigToGen = signFunction2.sign(this.privateKey, 'hex');
     const hashFunction4 = createHash('sha256');
-    const outputGenesisTXID = hashFunction4.update(sig2).digest('hex');
+    const outputGenesisTXID = hashFunction4.update(sigToGen).digest('hex');
 
     // create the two UTXOs
-    const userUTXO = new TXOutput(outputUserTXID, address, value);
+    const userUTXO = new TXOutput(outputUserTXID, address, sigToUser, value);
     const newGenesisUTXO = new TXOutput(
       outputGenesisTXID,
       this.address,
+      sigToGen,
       this.balance() - value
     );
 
     // create the transaction
+    // START HERE - CONFIRMING UTXO OWNERSHIP...
+    const input = new TXInput(this.UTXO, this.publicKey);
     const transaction = new Transaction();
-    transaction.inputs.push(this.UTXO);
+    transaction.inputs.push(input);
     transaction.outputs.push(userUTXO, newGenesisUTXO);
 
     // update UTXO pointer

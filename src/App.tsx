@@ -7,14 +7,11 @@ import GenesisView from './components/GenesisView';
 import Wallet from './components/Wallet';
 import AddressList from './components/AddressList';
 // classes
-import TXInput from './classes/TXInput';
-import TXOutput from './classes/TXOutput';
-import Transaction from './classes/Transaction';
-import Genesis from './classes/Genesis';
+import { TXInput, TXOutput, Transaction, Genesis } from './classes';
 // functions
 import generateWallet from './functions/generateWallet';
 // types
-import { WalletTracker } from './types';
+import { UTXOSet, WalletTracker } from './types';
 import { ReactNode } from 'react';
 
 const Container = styled.div`
@@ -32,7 +29,7 @@ interface State {
   walletTracker: WalletTracker;
   addressList: string[];
   transactions: Transaction[];
-  UTXOSet: TXOutput[];
+  UTXOSet: UTXOSet;
 }
 
 class App extends React.Component<Props, State> {
@@ -43,6 +40,8 @@ class App extends React.Component<Props, State> {
     // create instance of Genesis and the genesisUTXO
     const genesis = new Genesis();
     const genesisUTXO = genesis.UTXO;
+    const UTXOSet: UTXOSet = {};
+    UTXOSet[genesisUTXO.txid] = genesisUTXO;
 
     // state management
     this.state = {
@@ -65,7 +64,7 @@ class App extends React.Component<Props, State> {
       // component, but cryptographic verification of ownership is
       // still verified (move this comment to corresponding functions)
       transactions: [],
-      UTXOSet: [genesisUTXO],
+      UTXOSet
     }
 
     this.createNewWallet = this.createNewWallet.bind(this);
@@ -114,13 +113,11 @@ class App extends React.Component<Props, State> {
       walletTracker,
       addressList,
       transactions
-    }, () => {
-      console.log(this.state);
     });
   };
 
 
-  // handler for verifying transactions
+  // handlers for verifying transactions
   // IMPORTANT: this function abstracts away the complexity performed by the
   // Bitcoin consensus & mining network; however, it performs a similar
   // function in terms of verifying that
@@ -132,11 +129,32 @@ class App extends React.Component<Props, State> {
   // the user/wallet "builds" and broadcasts the transaction, and the network verifies.
   // so the functionality to build a transaction is in the Wallet component;
   // the verification is here. if valid, the transaction is added to the chain of
-  // valid transactions
+  // valid transactions and updates the UTXO set, which is done in the following function
 
   verifyTransaction(transaction: Transaction): boolean {
 
+    // 1: Verify inputs. This is done in 2 parts:
+    // a: verify that inputs are in the UTXO set (avoid double-spend)
+    // b: verify that user has access to UTXOs as claimed
+    const { UTXOSet } = this.state;
+    const  { inputs } = transaction;
+    // make sure user isn't trying to use same UTXO twice in one tx
+    const UTXOTracker = new Set();
+
+    for (let i = 0; i < inputs.length; i++) {
+      const { txid } = inputs[i];
+      // verify that UTXO is in the set and isn't being reused
+      if (!UTXOSet[txid] || UTXOTracker.has(txid)) return false;
+
+      // if not, add to the tracker
+      UTXOTracker.add(txid);
+    }
+
     return true;
+  }
+
+  addTransactionToChain(transaction: Transaction): void {
+
   }
 
   render(): ReactNode {

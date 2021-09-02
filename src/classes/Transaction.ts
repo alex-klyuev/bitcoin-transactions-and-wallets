@@ -1,5 +1,4 @@
-import TXInput from "./TXInput";
-import TXOutput from "./TXOutput";
+import { TXInput, TXOutput } from './';
 
 class Transaction {
   inputs: TXInput[];
