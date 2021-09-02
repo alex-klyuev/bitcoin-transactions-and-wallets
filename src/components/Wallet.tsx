@@ -11,12 +11,14 @@ const Space = styled.div`
   height: 10px;
 `;
 
-// Aim to recreate Bitcoin wallet software framework
-// 1. Has access to full UTXO Set, must do the work of identifying
-// which UTXOs belong to it
-// 2. must build transactions in their entirety and broadcast them
+// Aim to recreate Bitcoin wallet software framework:
+// must build transactions in their entirety and broadcast them
 // to the network; transactions are either validated and added to chain
 // or denied (no error messages provided)
+
+// However, instead of making the wallet software find and manage its UTXOs
+// as it would in reality, I have the chain pass down all UTXOs that
+// belong to that address for the sake of efficiency
 
 interface Props {
   wallet: Wallet;

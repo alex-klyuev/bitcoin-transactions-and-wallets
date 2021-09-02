@@ -36,12 +36,8 @@ interface State {
   // UTXO state in a separate application. However, for this
   // application I'll have a separate set that indexes by
   // address for quick lookup by the wallet components
-  // addresses may have multiple UTXOs which will be stored
-  // in a queue (just for fun)
   UTXOSetByAddress: {
-    [index: string]: {
-      [index: string]: UTXOSet
-    }
+    [index: string]: UTXOSet
   };
 }
 
@@ -56,8 +52,8 @@ class App extends React.Component<Props, State> {
     const UTXOSetByTXID: UTXOSet = {};
     UTXOSetByTXID[genesisUTXO.txid] = genesisUTXO;
     const UTXOSetByAddress: State['UTXOSetByAddress'] = {};
-    UTXOSetByAddress[genesisUTXO.address] = new Queue();
-    UTXOSetByAddress[genesisUTXO.address].enqueue(genesisUTXO);
+    UTXOSetByAddress[genesisUTXO.address] = {};
+    UTXOSetByAddress[genesisUTXO.address][genesisUTXO.txid] = genesisUTXO;
 
     // state management
     this.state = {
@@ -113,7 +109,7 @@ class App extends React.Component<Props, State> {
 
     // add address to list and UTXOSetByAddress
     addressList.push(address);
-    UTXOSetByAddress[address] = new Queue();
+    UTXOSetByAddress[address] = {};
 
     // have genesis deposit the target funds
     if (deposit > 0) {
@@ -242,26 +238,31 @@ class App extends React.Component<Props, State> {
   }
 
   addTransactionToChain(transaction: Transaction): void {
-    let {
+    const {
       UTXOSetByTXID,
       UTXOSetByAddress,
       transactions
     } = this.state;
-    // remove inputs from UTXOset
+
+    // grab the address from primary UTXO set before we delete it
+    const address = UTXOSetByTXID[transaction.inputs[0].txid].address;
+
+    // remove inputs from UTXOsets
     transaction.inputs.forEach((input) => {
       delete UTXOSetByTXID[input.txid];
-      delete UTXOSetByAddress[UTXOSetByTXID[input.address];
+      delete UTXOSetByAddress[address][input.txid];
     });
-    // add outputs to UTXOset
+    // add outputs to UTXOsets
     transaction.outputs.forEach((output) => {
       UTXOSetByTXID[output.txid] = output;
-      UTXOSetByAddress[output.address] = output;
+      UTXOSetByAddress[address][output.txid] = output;
     });
 
     // add tx to all tx list
     transactions.push(transaction);
     this.setState({
       UTXOSetByTXID: { ...UTXOSetByTXID },
+      UTXOSetByAddress: { ...UTXOSetByAddress },
       transactions: [...transactions]
     });
   }
@@ -291,7 +292,7 @@ class App extends React.Component<Props, State> {
             return <Wallet
               key={address}
               wallet={wallet}
-              UTXOSet={UTXOSetByAddress}
+              UTXOSet={UTXOSetByAddress[address]}
             />
           })}
         </Block>
