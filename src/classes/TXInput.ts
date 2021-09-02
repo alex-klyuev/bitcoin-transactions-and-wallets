@@ -1,16 +1,14 @@
 import TXOutput from "./TXOutput";
 
 // outputs always become inputs, so we can reuse that information
-// in this implementation, the only change is that we swap the address for
-// the public key, so that the transaction can be verified
+// the only thing we actually need is the txid!
+// the output is stored already in the UTXOSet, so that chain
+// has all the information it needs to verify this transaction
+// from the txid
 class TXInput {
   txid: string;
-  publicKey: string;
-  value: number;
-  constructor(TXOutput: TXOutput, publicKey: string) {
+  constructor(TXOutput: TXOutput) {
     this.txid = TXOutput.txid;
-    this.value = TXOutput.value;
-    this.publicKey = publicKey;
   }
 }
 

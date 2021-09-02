@@ -10,7 +10,7 @@ import AddressList from './components/AddressList';
 // classes
 import { Transaction, Genesis } from './classes';
 // functions
-import generateWallet from './functions/generateWallet';
+import { generateWallet } from './functions';
 // types
 import { UTXOSet, WalletTracker } from './types';
 
@@ -28,7 +28,7 @@ interface Props { }
 interface State {
   genesis: Genesis;
   walletTracker: WalletTracker;
-  addressList: string[];
+  addressList: Set<string>;
   transactions: Transaction[];
   UTXOSet: UTXOSet;
 }
@@ -55,7 +55,7 @@ class App extends React.Component<Props, State> {
       // but we'll keep it here to start for the purposes of simulating the
       // Bitcoin transaction verification and chaining design at a high level
       walletTracker: {},
-      addressList: [],
+      addressList: new Set(),
 
       // transaction chain manager
       // these properties simulate what the Bitcoin Network would keep
@@ -65,27 +65,28 @@ class App extends React.Component<Props, State> {
       // component, but cryptographic verification of ownership is
       // still verified (move this comment to corresponding functions)
       transactions: [],
-      UTXOSet
+      UTXOSet,
     }
 
     this.createNewWallet = this.createNewWallet.bind(this);
+    this.verifyAndAddTransaction = this.verifyAndAddTransaction.bind(this);
   }
 
   // handler for when user creates new wallet
   // form validates so this is only called with valid inputs
   createNewWallet(username: string, deposit: number): void {
+    const {
+      walletTracker,
+      addressList,
+      genesis
+    } = this.state;
+
     // generate pub-priv key pair and address
     const {
       address,
       publicKey,
       privateKey
     } = generateWallet();
-
-    let {
-      walletTracker,
-      addressList,
-    } = this.state;
-    const { genesis } = this.state;
 
     // add to wallet tracker
     walletTracker[address] = {
@@ -95,19 +96,22 @@ class App extends React.Component<Props, State> {
     };
 
     // add address to list
-    addressList.push(address);
+    addressList.add(address);
 
     // have genesis deposit the target funds
     if (deposit > 0) {
       const transaction = genesis.deposit(address, deposit);
-
-      // REFACTOR THIS TO VERIFY TRANSACTIONS
       this.verifyAndAddTransaction(transaction);
     }
 
     this.setState({
       walletTracker: { ...walletTracker },
-      addressList: [...addressList],
+      addressList: (() => {
+        // make a new set to trigger new state
+        const newSet: Set<string> = new Set();
+        addressList.forEach((address) => newSet.add(address))
+        return newSet;
+      })()
     });
   };
 
@@ -207,9 +211,13 @@ class App extends React.Component<Props, State> {
       verify.end();
       // verify the signature
       const cond1 = verify.verify(publicKey, sig, 'hex');
-      const outputHashFunction = createHash('sha256');
-      const outputHash = outputHashFunction.update(sig).digest('hex');
       // verify that we arrive at the same final hash
+      const outputHashFunction = createHash('sha256');
+      const outputHash = outputHashFunction
+        .update(sig)
+        .update(i.toString())
+        .digest('hex');
+
       const cond2 = txid === outputHash;
       if (!(cond1 && cond2)) return false;
       outputVal += value;
@@ -225,7 +233,11 @@ class App extends React.Component<Props, State> {
   }
 
   addTransactionToChain(transaction: Transaction): void {
-    let { UTXOSet, transactions } = this.state;
+    const {
+      UTXOSet,
+      transactions
+    } = this.state;
+
     // remove inputs from UTXOset
     transaction.inputs.forEach((input) => {
       delete UTXOSet[input.txid];
@@ -240,6 +252,8 @@ class App extends React.Component<Props, State> {
     this.setState({
       UTXOSet: { ...UTXOSet },
       transactions: [...transactions]
+    }, () => {
+      console.log(this.state);
     });
   }
 
@@ -247,9 +261,12 @@ class App extends React.Component<Props, State> {
     const {
       walletTracker,
       addressList,
-      genesis
+      genesis,
+      UTXOSet
     } = this.state;
-    const { createNewWallet } = this;
+    const { createNewWallet, verifyAndAddTransaction } = this;
+
+    const addressListArray = Array.from(addressList);
 
     return (
       <Container>
@@ -259,12 +276,18 @@ class App extends React.Component<Props, State> {
             availBal={genesis.balance()}
           />
           <GenesisView genesis={genesis} />
-          {addressList.map((address) => {
+          {addressListArray.map((address) => {
             const wallet = {
               address,
               ...walletTracker[address]
             };
-            return <Wallet key={address} wallet={wallet} />
+            return <Wallet
+              key={address}
+              wallet={wallet}
+              UTXOSet={UTXOSet}
+              addressList={addressList}
+              verifyAndAddTransaction={verifyAndAddTransaction}
+            />
           })}
         </Block>
         <Block>

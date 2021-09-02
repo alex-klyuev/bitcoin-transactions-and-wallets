@@ -6,7 +6,7 @@ interface Props {
 }
 
 interface SetValues {
-  [index: string]: Dispatch<SetStateAction<string>>
+  [index: string]: Dispatch<SetStateAction<string>>;
 }
 
 const NewWalletForm = (props: Props): ReactElement => {
