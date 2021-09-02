@@ -14,6 +14,7 @@ const buildTransactionFromUTXOs = (
   // compute total input val, hash the inputs, and create TXInputs
   let inputVal = 0;
   const inputs: TXInput[] = [];
+  const outputs: TXOutput[] = [];
   const inputHashFunction = createHash('sha256');
   inputUTXOs.forEach((inputUTXO) => {
     inputVal += inputUTXO.value;
@@ -32,42 +33,48 @@ const buildTransactionFromUTXOs = (
   const signFunction1 = createSign('sha256');
   signFunction1.update(midHash1);
   signFunction1.end();
-  const sigToUser = signFunction1.sign(senderPrivateKey, 'hex');
+  const sigToRecipient = signFunction1.sign(senderPrivateKey, 'hex');
 
   // hash signature to convert into TXID format
   const outputHashFunction1 = createHash('sha256');
-  const outputUserTXID = outputHashFunction1.update(sigToUser).digest('hex');
+  const outputRecipientTXID = outputHashFunction1.update(sigToRecipient).digest('hex');
 
-  // now repeat the process with the sender's address for the change UTXO
-  const midHashFunction2 = createHash('sha256');
-  midHashFunction2.update(inputHash);
-  midHashFunction2.update(senderAddress);
-  const midHash2 = midHashFunction2.digest('hex');
-  const signFunction2 = createSign('sha256');
-  signFunction2.update(midHash2);
-  signFunction2.end();
-  const sigToGen = signFunction2.sign(senderPrivateKey, 'hex');
-  const outputHashFunction2 = createHash('sha256');
-  const outputGenesisTXID = outputHashFunction2.update(sigToGen).digest('hex');
-
-  // create the two UTXOs
-  const userUTXO = new TXOutput(
-    outputUserTXID,
+  // create UTXO and push to outputs
+  const recipientUTXO = new TXOutput(
+    outputRecipientTXID,
     recipientAddress,
-    sigToUser,
+    sigToRecipient,
     value
   );
-  const newGenesisUTXO = new TXOutput(
-    outputGenesisTXID,
-    senderAddress,
-    sigToGen,
-    inputVal - value
-  );
+  outputs.push(recipientUTXO);
+
+  // now repeat the process with the sender's address for the change UTXO
+  // first check if there's change remaining
+  const change = inputVal - value;
+  if (change > 0) {
+    const midHashFunction2 = createHash('sha256');
+    midHashFunction2.update(inputHash);
+    midHashFunction2.update(senderAddress);
+    const midHash2 = midHashFunction2.digest('hex');
+    const signFunction2 = createSign('sha256');
+    signFunction2.update(midHash2);
+    signFunction2.end();
+    const sigToChange = signFunction2.sign(senderPrivateKey, 'hex');
+    const outputHashFunction2 = createHash('sha256');
+    const outputChangeTXID = outputHashFunction2.update(sigToChange).digest('hex');
+    const changeUTXO = new TXOutput(
+      outputChangeTXID,
+      senderAddress,
+      sigToChange,
+      change
+    );
+    outputs.push(changeUTXO);
+  }
 
   // create the transaction
   const transaction = new Transaction();
   transaction.inputs = inputs;
-  transaction.outputs.push(userUTXO, newGenesisUTXO);
+  transaction.outputs = outputs;
 
   // sign own address and attach pubkey and sig to transaction for verification
   transaction.publicKey = senderPublicKey;
