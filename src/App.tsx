@@ -84,7 +84,6 @@ class App extends React.Component<Props, State> {
     let {
       walletTracker,
       addressList,
-      transactions
     } = this.state;
     const { genesis } = this.state;
 
@@ -93,28 +92,22 @@ class App extends React.Component<Props, State> {
       username,
       publicKey,
       privateKey
-    }
-    walletTracker = { ...walletTracker };
+    };
 
     // add address to list
     addressList.push(address);
-    addressList = [...addressList];
 
     // have genesis deposit the target funds
     if (deposit > 0) {
       const transaction = genesis.deposit(address, deposit);
 
       // REFACTOR THIS TO VERIFY TRANSACTIONS
-      console.log('test', this.verifyTransaction(transaction));
-
-      transactions.push(transaction);
-      transactions = [...transactions];
+      this.verifyAndAddTransaction(transaction);
     }
 
     this.setState({
-      walletTracker,
-      addressList,
-      transactions
+      walletTracker: { ...walletTracker },
+      addressList: [...addressList],
     });
   };
 
@@ -136,7 +129,7 @@ class App extends React.Component<Props, State> {
   // similar to Bitcoin (I think), there won't be any specific error codes:
   // the transaction is either accepted or declined in its entirety.
   // only once every aspect is verified do we update the UTXOSet
-  verifyTransaction(transaction: Transaction): boolean {
+  verifyAndAddTransaction(transaction: Transaction): boolean {
     const { UTXOSet } = this.state;
     const {
       inputs,
@@ -232,7 +225,7 @@ class App extends React.Component<Props, State> {
   }
 
   addTransactionToChain(transaction: Transaction): void {
-    let { UTXOSet } = this.state;
+    let { UTXOSet, transactions } = this.state;
     // remove inputs from UTXOset
     transaction.inputs.forEach((input) => {
       delete UTXOSet[input.txid];
@@ -241,10 +234,12 @@ class App extends React.Component<Props, State> {
     transaction.outputs.forEach((output) => {
       UTXOSet[output.txid] = output;
     });
+
+    // add tx to all tx list
+    transactions.push(transaction);
     this.setState({
-      UTXOSet: {...UTXOSet}
-    }, () => {
-      console.log(this.state);
+      UTXOSet: { ...UTXOSet },
+      transactions: [...transactions]
     });
   }
 
