@@ -8,7 +8,7 @@ import GenesisView from './components/GenesisView';
 import Wallet from './components/Wallet';
 import AddressList from './components/AddressList';
 // classes
-import { TXInput, TXOutput, Transaction, Genesis } from './classes';
+import { Transaction, Genesis } from './classes';
 // functions
 import generateWallet from './functions/generateWallet';
 // types
@@ -105,6 +105,7 @@ class App extends React.Component<Props, State> {
       const transaction = genesis.deposit(address, deposit);
 
       // REFACTOR THIS TO VERIFY TRANSACTIONS
+      console.log('test', this.verifyTransaction(transaction));
 
       transactions.push(transaction);
       transactions = [...transactions];
@@ -143,10 +144,12 @@ class App extends React.Component<Props, State> {
       publicKey,
       signature
     } = transaction;
+    let inputVal = 0;
 
-    // 1: Verify inputs. This is done in 2 parts:
-    // a: verify that inputs are in the UTXO set (avoid double-spend)
-    // b: verify that user has access to UTXOs as claimed
+    // 1: Verify inputs
+    //    a: verify that inputs are in the UTXO set (avoid double-spend)
+    //    b: verify that user has access to UTXOs as claimed
+
     // make sure user isn't trying to use same UTXO twice in one tx
     const UTXOTracker = new Set();
 
@@ -156,23 +159,39 @@ class App extends React.Component<Props, State> {
       // a. verify that UTXO is in the set and isn't being reused
       if (!UTXOSet[txid] || UTXOTracker.has(txid)) return false;
 
-      // if not, add to the tracker
+      // if not, add to the tracker and grab the UTXO for further verification
       UTXOTracker.add(txid);
+      const UTXO = UTXOSet[txid];
 
       // verify ownership of that UTXO
-      // i. verify that user public key hashes to address
+      // i. verify that the user's public key hashes to the same address
+      // as in the UTXO
       const addressVerifyHash = createHash('sha256');
       const addressVerify = addressVerifyHash.update(publicKey).digest('hex');
-      const UTXOAddress = UTXOSet[txid].address;
-      const cond1 = addressVerify === UTXOAddress;
+      const cond1 = addressVerify === UTXO.address;
 
       // ii. verify that signature corresponds to the same public key
       // that forms the address
       const verify = createVerify('sha256');
-      verify.update(UTXOAddress);
+      verify.update(UTXO.address);
       verify.end();
       const cond2 = verify.verify(publicKey, signature, 'hex');
       if (!(cond1 && cond2)) return false;
+
+      inputVal += UTXO.value;
+    }
+
+    // 2. Verify outputs
+    //    a. verify hashes and signature of each output
+    //    b. total value must be equal to or less than input total
+
+    // in this app, users will only have 1-2 outputs per tx,
+    // but in reality a user could make many outputs at once
+    for (let i = 0; i < outputs.length; i++) {
+      const output = outputs[i];
+
+      // i think i'll have to repeat the input hashing procedure including
+      // for multiple inputs
     }
 
     return true;
