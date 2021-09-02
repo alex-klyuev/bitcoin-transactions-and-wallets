@@ -61,6 +61,8 @@ I adopted a simpler approach in this implementation: a user claiming a UTXO must
 More similar to the Bitcoin implementation, a Bitcoin sender hashes together the input transaction hashes, the recipient's address, and digitally signs it. This can similarly be verified by anyone by using the sender's public key.
 
 ## Libraries
+create-react-app
+<br>
 Nodejs crypto module
 <br>
 key-encoder

@@ -1,6 +1,47 @@
 import { createHash, createSign } from "crypto";
 import { Transaction, TXInput, TXOutput } from "../classes";
 
+const buildOutput = (
+  inputHash: string,
+  recipientAddress: string,
+  outputIndex: number,
+  senderPrivateKey: string,
+  value: number
+): TXOutput => {
+  // hash the input hash with the recipient address
+  const midHashFunction1 = createHash('sha256');
+  midHashFunction1.update(inputHash);
+  midHashFunction1.update(recipientAddress);
+  const midHash1 = midHashFunction1.digest('hex');
+
+  // sign the hash
+  const signFunction1 = createSign('sha256');
+  signFunction1.update(midHash1);
+  signFunction1.end();
+  const sigToRecipient = signFunction1.sign(senderPrivateKey, 'hex');
+
+  // hash signature with output index
+  // this serves two purposes: to convert into TXID format and to avoid
+  // txid collisions when sending mulitple outputs to the same address
+  // in our case we'll only have two output indices but this could easily
+  // be extrapolated to multiple outputs
+  const outputHashFunction1 = createHash('sha256');
+  const outputRecipientTXID = outputHashFunction1
+    .update(sigToRecipient)
+    .update(outputIndex.toString())
+    .digest('hex');
+
+  // create UTXO and push to outputs
+  const recipientUTXO = new TXOutput(
+    outputRecipientTXID,
+    recipientAddress,
+    sigToRecipient,
+    value
+  );
+
+  return recipientUTXO;
+};
+
 // this function will take an array of UTXOs that the user wants to
 // use to build a transaction and return the transaction
 const buildTransactionFromUTXOs = (
@@ -23,34 +64,11 @@ const buildTransactionFromUTXOs = (
   });
   const inputHash = inputHashFunction.digest('hex');
 
-  // hash the input hash with the recipient address
-  const midHashFunction1 = createHash('sha256');
-  midHashFunction1.update(inputHash);
-  midHashFunction1.update(recipientAddress);
-  const midHash1 = midHashFunction1.digest('hex');
-
-  // sign the hash
-  const signFunction1 = createSign('sha256');
-  signFunction1.update(midHash1);
-  signFunction1.end();
-  const sigToRecipient = signFunction1.sign(senderPrivateKey, 'hex');
-
-  // hash signature with output index
-  // this serves two purposes: to convert into TXID format and to avoid
-  // txid collisions when sending mulitple outputs to the same address
-  // in our case we'll only have two output indices but this could easily
-  // be extrapolated to multiple outputs
-  const outputHashFunction1 = createHash('sha256');
-  const outputRecipientTXID = outputHashFunction1
-    .update(sigToRecipient)
-    .update('0')
-    .digest('hex');
-
-  // create UTXO and push to outputs
-  const recipientUTXO = new TXOutput(
-    outputRecipientTXID,
+  const recipientUTXO = buildOutput(
+    inputHash,
     recipientAddress,
-    sigToRecipient,
+    0,
+    senderPrivateKey,
     value
   );
   outputs.push(recipientUTXO);
@@ -59,23 +77,11 @@ const buildTransactionFromUTXOs = (
   // first check if there's change remaining
   const change = inputVal - value;
   if (change > 0) {
-    const midHashFunction2 = createHash('sha256');
-    midHashFunction2.update(inputHash);
-    midHashFunction2.update(senderAddress);
-    const midHash2 = midHashFunction2.digest('hex');
-    const signFunction2 = createSign('sha256');
-    signFunction2.update(midHash2);
-    signFunction2.end();
-    const sigToChange = signFunction2.sign(senderPrivateKey, 'hex');
-    const outputHashFunction2 = createHash('sha256');
-    const outputChangeTXID = outputHashFunction2
-      .update(sigToChange)
-      .update('1')
-      .digest('hex');
-    const changeUTXO = new TXOutput(
-      outputChangeTXID,
+    const changeUTXO = buildOutput(
+      inputHash,
       senderAddress,
-      sigToChange,
+      1,
+      senderPrivateKey,
       change
     );
     outputs.push(changeUTXO);
