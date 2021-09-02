@@ -145,13 +145,14 @@ class App extends React.Component<Props, State> {
       signature
     } = transaction;
     let inputVal = 0;
+    let outputVal = 0;
 
     // 1: Verify inputs
     //    a: verify that inputs are in the UTXO set (avoid double-spend)
     //    b: verify that user has access to UTXOs as claimed
 
     // make sure user isn't trying to use same UTXO twice in one tx
-    const UTXOTracker = new Set();
+    const UTXOTracker: Set<string> = new Set();
 
     // must confirm each input individually
     for (let i = 0; i < inputs.length; i++) {
@@ -200,7 +201,8 @@ class App extends React.Component<Props, State> {
       const {
         address,
         sig,
-        txid
+        txid,
+        value
       } = outputs[i];
       // hash input hash with recipient address
       const midHashFunction = createHash('sha256');
@@ -217,13 +219,33 @@ class App extends React.Component<Props, State> {
       // verify that we arrive at the same final hash
       const cond2 = txid === outputHash;
       if (!(cond1 && cond2)) return false;
+      outputVal += value;
     }
+
+    if (outputVal > inputVal) return false;
+
+    // once all has been verified, add Transaction to chain
+    // then return true to the user
+    this.addTransactionToChain(transaction);
 
     return true;
   }
 
   addTransactionToChain(transaction: Transaction): void {
-
+    let { UTXOSet } = this.state;
+    // remove inputs from UTXOset
+    transaction.inputs.forEach((input) => {
+      delete UTXOSet[input.txid];
+    });
+    // add outputs to UTXOset
+    transaction.outputs.forEach((output) => {
+      UTXOSet[output.txid] = output;
+    });
+    this.setState({
+      UTXOSet: {...UTXOSet}
+    }, () => {
+      console.log(this.state);
+    });
   }
 
   render() {
