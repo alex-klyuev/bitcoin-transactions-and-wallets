@@ -1,11 +1,7 @@
 import { createECDH, createHash } from 'crypto';
 import KeyEncoder from 'key-encoder';
-
-interface Wallet {
-  address: string;
-  publicKey: string;
-  privateKey: string;
-}
+// types
+import { Wallet } from '../types';
 
 const generateWallet = (): Wallet => {
   // generate EC public-private keys in hex format
