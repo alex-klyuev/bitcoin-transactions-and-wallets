@@ -36,18 +36,24 @@ npm start
 ### Genesis and Wallet Creation
 
 Upon startup a wallet named "Genesis" is created, along with the "Genesis UTXO" which has 21M BTC.
+
 A new wallet can "deposit" some money, which will result in Genesis sending that wallet that amount.
+
 In this way all transactions are chained from the Genesis UTXO.
 Wallets can send funds to other wallets but not back to Genesis.
 
 ### Building and Verifying a Transaction
 
 To build a transaction, a user selects UTXO's that belong to it and uses them as "inputs" for the transaction.
+
 In Bitcoin, they could use these inputs to create as many outputs as they like to various addresses.
+
 In this implementation, the user can select only one address to send to.
+
 If the input value is greater than the target transaction value, a "change output" is created back to the sender's address.
-<br>
+
 The purpose of this is to create a <i>unique, verifiable, irreversible chain of transactions</i> that holds all the transaction history of the network.
+
 Users can thereby trust the authenticity of the network because they are able to verify it themselves.
 
 ### Transaction Structure
@@ -78,18 +84,21 @@ There are two components to a transactoin that must be verified by the chain:
 
 ### UTXO
 In Bitcoin, this is accomplished via a locking/unlocking script, which is modeled by a Turing-incomplete scripting language.
-I adopted a simpler approach in this implementation: a user claiming a UTXO must present their public key and digitally sign their address. The chain verifies that the public key indeed corresponds to that address (the address is simply a hash of the public key) and verifies the signature.
+
+I adopted a simpler approach in this implementation: a user claiming a UTXO must present their public key and digitally sign their address.
+
+The chain verifies that the public key indeed corresponds to that address (the address is simply a hash of the public key) and verifies the signature.
 
 ## Transaction Authenticity
 More similar to the Bitcoin implementation, a Bitcoin sender hashes together the input transaction hashes, the recipient's address, and digitally signs it. This can similarly be verified by anyone by using the sender's public key.
 
 ## Libraries
 create-react-app
-<br>
+
 Nodejs crypto module
-<br>
+
 key-encoder
-<br>
+
 styled-components
 
 ## References
