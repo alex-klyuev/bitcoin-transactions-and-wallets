@@ -7,6 +7,10 @@ const OuterContainer = styled.div`
   margin: 0 10px;
 `;
 
+const Title = styled.h2`
+  text-align: center;
+`;
+
 const TxContainer = styled.div`
   border-style: solid;
   padding: 5px;
@@ -19,13 +23,11 @@ interface Props {
 
 const TransactionsView = (props: Props): ReactElement => {
   const { transactions } = props;
-
   const inverseTXs = transactions.slice().reverse();
-  console.log(inverseTXs);
 
   return (
     <OuterContainer>
-      <h4>Transactions:</h4>
+      <Title>Transactions</Title>
       {inverseTXs.map((tx) => {
         return (
           <TxContainer key={tx.signature}>

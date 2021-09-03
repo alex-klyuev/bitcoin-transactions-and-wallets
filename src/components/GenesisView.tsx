@@ -28,6 +28,8 @@ const GenesisView = (props: Props): ReactElement => {
   return (
     <Container>
       <h4>{username}</h4>
+      <div> Don't send money to Genesis!</div>
+      <Space></Space>
       <Wrap>Address: {address}</Wrap>
       <Space></Space>
       <div>Balance: {balance} BTC</div>

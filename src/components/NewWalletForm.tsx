@@ -1,4 +1,5 @@
 import { FormEvent, useState, ReactElement, Dispatch, SetStateAction } from "react";
+import styled from "styled-components";
 
 interface Props {
   createNewWallet: (username: string, deposit:number) => void;
@@ -8,6 +9,10 @@ interface Props {
 interface SetValues {
   [index: string]: Dispatch<SetStateAction<string>>;
 }
+
+const Wrapper = styled.div`
+  text-align: center;
+`;
 
 const NewWalletForm = (props: Props): ReactElement => {
   const { createNewWallet, availBal } = props;
@@ -57,7 +62,7 @@ const NewWalletForm = (props: Props): ReactElement => {
   };
 
   return (
-    <div>
+    <Wrapper>
       <h4>Create New Wallet:</h4>
       <div>Enter Username</div>
       <input
@@ -74,7 +79,7 @@ const NewWalletForm = (props: Props): ReactElement => {
       <div>
         <button onClick={onSubmit}>Submit</button>
       </div>
-    </div>
+    </Wrapper>
   );
 };
 

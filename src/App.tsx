@@ -6,12 +6,11 @@ import { createHash, createVerify } from 'crypto';
 import NewWalletForm from './components/NewWalletForm';
 import GenesisView from './components/GenesisView';
 import Wallet from './components/Wallet';
-import AddressList from './components/AddressList';
 import TransactionsView from './components/TransactionsView';
 // classes
 import { Transaction, Genesis } from './classes';
 // functions
-import { generateWallet } from './functions';
+import { generateWallet, splitArray } from './functions';
 // types
 import { UTXOSet, WalletTracker } from './types';
 
@@ -20,8 +19,31 @@ const Container = styled.div`
   display: flex;
 `;
 
-const Block = styled.div`
-  width: 33vw;
+const Title = styled.h2`
+  text-align: center;
+`;
+
+const Block1 = styled.div`
+  width: 39vw;
+  margin: 0 10px;
+`;
+
+const LeftContainer1 = styled.div`
+  display: flex;
+`;
+
+const LeftContainer2 = styled.div`
+  display: flex;
+  margin-right: 20px;
+`;
+
+const LeftComponent = styled.div`
+  width: 50%;
+  margin: 0 5px;
+`;
+
+const Block2 = styled.div`
+  width: 59vw;
 `;
 
 interface Props { }
@@ -171,7 +193,7 @@ class App extends React.Component<Props, State> {
       // as in the UTXO
       const addressVerifyHash = createHash('sha256');
       const addressVerify = addressVerifyHash.update(publicKey).digest('hex');
-      if(addressVerify !== UTXO.address) return false;
+      if (addressVerify !== UTXO.address) return false;
 
       inputVal += UTXO.value;
     }
@@ -182,7 +204,7 @@ class App extends React.Component<Props, State> {
     const verify = createVerify('sha256');
     verify.update(inputHash);
     verify.end();
-    if(!verify.verify(publicKey, signature, 'hex')) return false;
+    if (!verify.verify(publicKey, signature, 'hex')) return false;
 
     // 2. Verify outputs
     //    a. verify hashes and signature of each output
@@ -262,35 +284,59 @@ class App extends React.Component<Props, State> {
     const { createNewWallet, verifyAndAddTransaction } = this;
 
     const addressListArray = Array.from(addressList);
+    const [leftAddressList, rightAddressList] = splitArray(addressListArray);
 
     return (
       <Container>
-        <Block>
-          <NewWalletForm
-            createNewWallet={createNewWallet}
-            availBal={genesis.balance()}
-          />
-          <GenesisView genesis={genesis} />
-          {addressListArray.map((address) => {
-            const wallet = {
-              address,
-              ...walletTracker[address]
-            };
-            return <Wallet
-              key={address}
-              wallet={wallet}
-              UTXOSet={UTXOSet}
-              addressList={addressList}
-              verifyAndAddTransaction={verifyAndAddTransaction}
-            />
-          })}
-        </Block>
-        <Block>
-          <AddressList addressList={addressList} />
-        </Block>
-        <Block>
+        <Block1>
+          <Title>Wallets</Title>
+          <LeftContainer1>
+            <LeftComponent>
+              <NewWalletForm
+                createNewWallet={createNewWallet}
+                availBal={genesis.balance()}
+              />
+            </LeftComponent>
+            <LeftComponent>
+              <GenesisView genesis={genesis} />
+            </LeftComponent>
+          </LeftContainer1>
+          <LeftContainer2>
+            <LeftComponent>
+              {leftAddressList.map((address) => {
+                const wallet = {
+                  address,
+                  ...walletTracker[address]
+                };
+                return <Wallet
+                  key={address}
+                  wallet={wallet}
+                  UTXOSet={UTXOSet}
+                  addressList={addressList}
+                  verifyAndAddTransaction={verifyAndAddTransaction}
+                />
+              })}
+            </LeftComponent>
+            <LeftComponent>
+              {rightAddressList.map((address) => {
+                const wallet = {
+                  address,
+                  ...walletTracker[address]
+                };
+                return <Wallet
+                  key={address}
+                  wallet={wallet}
+                  UTXOSet={UTXOSet}
+                  addressList={addressList}
+                  verifyAndAddTransaction={verifyAndAddTransaction}
+                />
+              })}
+            </LeftComponent>
+          </LeftContainer2>
+        </Block1>
+        <Block2>
           <TransactionsView transactions={transactions} />
-        </Block>
+        </Block2>
       </Container>
     );
   };

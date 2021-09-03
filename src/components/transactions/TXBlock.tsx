@@ -20,14 +20,26 @@ interface Props {
   txid: string;
   value: number;
   address?: string;
+  index?: number;
 }
 
 const TXBlock = (props: Props): ReactElement => {
   const {
     txid,
     value,
-    address
+    address,
+    index
   } = props;
+
+  const renderOutputType = () => {
+    if (index === 0) {
+      return <div>Primary Output</div>
+    }
+    if (index === 1) {
+      return <div>Change Output</div>
+    }
+    return null;
+  }
 
   const renderAddress = () => {
     if (address) return (
@@ -42,11 +54,15 @@ const TXBlock = (props: Props): ReactElement => {
 
   return (
     <Container>
+      {renderOutputType()}
+      <Space></Space>
+      <div>Value: {value} BTC</div>
+      <Space></Space>
       <div>Transaction ID:</div>
       <Space></Space>
       <Wrap>{txid}</Wrap>
       <Space></Space>
-      <div>Value: {value} BTC</div>
+      <div>Recipient Address:</div>
       {renderAddress()}
     </Container>
   )

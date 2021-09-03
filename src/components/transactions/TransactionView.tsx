@@ -70,11 +70,12 @@ const TransactionView = (props: Props): ReactElement => {
           <Wrap>{recipientAddress}</Wrap>
           <Space></Space>
           <Text>Outputs</Text>
-          {outputs.map((output) => <TXBlock
+          {outputs.map((output, index) => <TXBlock
             key={output.txid}
             txid={output.txid}
             value={output.value}
             address={output.address}
+            index={index}
           />)}
         </Block>
       </Container>
