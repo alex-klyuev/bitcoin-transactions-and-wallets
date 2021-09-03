@@ -20,11 +20,13 @@ interface Props {
 const TransactionsView = (props: Props): ReactElement => {
   const { transactions } = props;
 
+  const inverseTXs = transactions.slice().reverse();
+  console.log(inverseTXs);
+
   return (
     <OuterContainer>
       <h4>Transactions:</h4>
-      {/* START HERE - NEW TXS FIRST */
-      [...transactions].reverse().map((tx) => {
+      {inverseTXs.reverse().map((tx) => {
         return (
           <TxContainer key={tx.signature}>
             <TransactionView

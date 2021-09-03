@@ -92,10 +92,11 @@ const buildTransactionFromUTXOs = (
   transaction.inputs = inputs;
   transaction.outputs = outputs;
 
-  // sign own address and attach pubkey and sig to transaction for verification
+  // sign input hash to make a unique signature per transaction
+  // and attach pubkey and sig to transaction for verification
   transaction.publicKey = senderPublicKey;
   const signTransaction = createSign('sha256');
-  signTransaction.update(senderAddress);
+  signTransaction.update(inputHash);
   signTransaction.end();
   transaction.signature = signTransaction.sign(senderPrivateKey, 'hex');
 

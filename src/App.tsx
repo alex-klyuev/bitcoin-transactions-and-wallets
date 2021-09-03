@@ -151,6 +151,8 @@ class App extends React.Component<Props, State> {
 
     // make sure user isn't trying to use same UTXO twice in one tx
     const UTXOTracker: Set<string> = new Set();
+    // build the input hash as we loop
+    const inputHashFunction = createHash('sha256');
 
     // must confirm each input individually
     for (let i = 0; i < inputs.length; i++) {
@@ -158,40 +160,33 @@ class App extends React.Component<Props, State> {
       // a. verify that UTXO is in the set and isn't being reused
       if (!UTXOSet[txid] || UTXOTracker.has(txid)) return false;
 
-      // if not, add to the tracker and grab the UTXO for further verification
+      // if not, add to the tracker, grab the UTXO for further verification,
+      // and add the txid to the input hash
       UTXOTracker.add(txid);
       const UTXO = UTXOSet[txid];
+      inputHashFunction.update(txid);
 
       // verify ownership of that UTXO
       // i. verify that the user's public key hashes to the same address
       // as in the UTXO
       const addressVerifyHash = createHash('sha256');
       const addressVerify = addressVerifyHash.update(publicKey).digest('hex');
-      const cond1 = addressVerify === UTXO.address;
-
-      // ii. verify that signature corresponds to the same public key
-      // that forms the address
-      const verify = createVerify('sha256');
-      verify.update(UTXO.address);
-      verify.end();
-      const cond2 = verify.verify(publicKey, signature, 'hex');
-      if (!(cond1 && cond2)) return false;
+      if(addressVerify !== UTXO.address) return false;
 
       inputVal += UTXO.value;
     }
 
+    // ii. verify that the tx signature corresponds to the same public key
+    // that forms the address
+    const inputHash = inputHashFunction.digest('hex');
+    const verify = createVerify('sha256');
+    verify.update(inputHash);
+    verify.end();
+    if(!verify.verify(publicKey, signature, 'hex')) return false;
+
     // 2. Verify outputs
     //    a. verify hashes and signature of each output
     //    b. total value must be equal to or less than input total
-
-    // first, must generate the hash of all the inputs
-    // this is done by hashing the inputs in the order they appear (order matters)
-    // this would be our "protocol" that all network participants would follow;
-    // transaction builders and validators would validate hashes only if
-    // hashed in the order they appear in the transaction
-    const inputHashFunction = createHash('sha256');
-    inputs.forEach((input) => inputHashFunction.update(input.txid));
-    const inputHash = inputHashFunction.digest('hex');
 
     // in this app, users will only have 1-2 outputs per tx,
     // but in reality a user could make many outputs at once
