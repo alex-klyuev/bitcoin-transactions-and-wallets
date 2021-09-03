@@ -7,6 +7,7 @@ import NewWalletForm from './components/NewWalletForm';
 import GenesisView from './components/GenesisView';
 import Wallet from './components/Wallet';
 import AddressList from './components/AddressList';
+import TransactionsView from './components/TransactionsView';
 // classes
 import { Transaction, Genesis } from './classes';
 // functions
@@ -252,8 +253,6 @@ class App extends React.Component<Props, State> {
     this.setState({
       UTXOSet: { ...UTXOSet },
       transactions: [...transactions]
-    }, () => {
-      console.log(this.state);
     });
   }
 
@@ -262,7 +261,8 @@ class App extends React.Component<Props, State> {
       walletTracker,
       addressList,
       genesis,
-      UTXOSet
+      UTXOSet,
+      transactions
     } = this.state;
     const { createNewWallet, verifyAndAddTransaction } = this;
 
@@ -294,7 +294,7 @@ class App extends React.Component<Props, State> {
           <AddressList addressList={addressList} />
         </Block>
         <Block>
-          {/* Transactions View will go here */}
+          <TransactionsView transactions={transactions} />
         </Block>
       </Container>
     );

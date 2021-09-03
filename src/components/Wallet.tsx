@@ -119,7 +119,7 @@ const UserWalletInterface = (props: Props): ReactElement => {
       <h4>Username: {username}</h4>
       <Wrap>Address: {address}</Wrap>
       <Space></Space>
-      <div>Balance: {balance(address, UTXOSet)}</div>
+      <div>Balance: {balance(address, UTXOSet)} BTC</div>
       <h4>Send Money:</h4>
       <div>Address</div>
       <input

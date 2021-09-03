@@ -30,7 +30,7 @@ const GenesisView = (props: Props): ReactElement => {
       <h4>{username}</h4>
       <Wrap>Address: {address}</Wrap>
       <Space></Space>
-      <div>Balance: {balance}</div>
+      <div>Balance: {balance} BTC</div>
     </Container>
   );
 };

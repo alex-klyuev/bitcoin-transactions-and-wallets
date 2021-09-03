@@ -91,7 +91,6 @@ const buildTransactionFromUTXOs = (
   const transaction = new Transaction();
   transaction.inputs = inputs;
   transaction.outputs = outputs;
-  console.log(transaction.outputs);
 
   // sign own address and attach pubkey and sig to transaction for verification
   transaction.publicKey = senderPublicKey;
