@@ -16,6 +16,22 @@ const Space = styled.div`
   height: 10px;
 `;
 
+const Blue = styled.div`
+  word-wrap: break-word;
+  padding: 0 10px;
+  color: blue;
+`;
+
+const Green = styled.div`
+  color: darkgreen;
+  font-weight: bold;
+`;
+
+const Bold = styled.div`
+  font-weight: bold;
+  color: darkred;
+`;
+
 interface Props {
   txid: string;
   value: number;
@@ -33,10 +49,10 @@ const TXBlock = (props: Props): ReactElement => {
 
   const renderOutputType = () => {
     if (index === 0) {
-      return <div>Primary Output</div>
+      return <Bold>Primary Output</Bold>
     }
     if (index === 1) {
-      return <div>Change Output</div>
+      return <Bold>Change Output</Bold>
     }
     return null;
   }
@@ -44,6 +60,7 @@ const TXBlock = (props: Props): ReactElement => {
   const renderAddress = () => {
     if (address) return (
       <div>
+        <div>Recipient Address:</div>
         <Space></Space>
         <Wrap>{address}</Wrap>
         <Space></Space>
@@ -56,13 +73,12 @@ const TXBlock = (props: Props): ReactElement => {
     <Container>
       {renderOutputType()}
       <Space></Space>
-      <div>Value: {value} BTC</div>
+      <Green>Value: {value.toLocaleString()} BTC</Green>
       <Space></Space>
       <div>Transaction ID:</div>
       <Space></Space>
-      <Wrap>{txid}</Wrap>
+      <Blue>{txid}</Blue>
       <Space></Space>
-      <div>Recipient Address:</div>
       {renderAddress()}
     </Container>
   )

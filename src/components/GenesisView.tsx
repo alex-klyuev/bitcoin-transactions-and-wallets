@@ -32,7 +32,7 @@ const GenesisView = (props: Props): ReactElement => {
       <Space></Space>
       <Wrap>Address: {address}</Wrap>
       <Space></Space>
-      <div>Balance: {balance} BTC</div>
+      <div>Balance: {balance.toLocaleString()} BTC</div>
     </Container>
   );
 };

@@ -12,7 +12,14 @@ const Block = styled.div`
   width: 50%;
 `;
 
-const Text = styled.div`
+const Green = styled.div`
+  text-align: center;
+  color: darkgreen;
+  font-weight: bold;
+`;
+
+const Bold = styled.div`
+  font-weight: bold;
   text-align: center;
 `;
 
@@ -50,14 +57,14 @@ const TransactionView = (props: Props): ReactElement => {
 
   return (
     <div>
-      <Text>Value: {value}</Text>
+      <Green>Value: {value.toLocaleString()}</Green>
       <Container>
         <Block>
-          <Text>Sender:</Text>
+          <Bold>Sender:</Bold>
           <Space></Space>
           <Wrap>{senderAddress}</Wrap>
           <Space></Space>
-          <Text>Inputs</Text>
+          <Bold>Inputs</Bold>
           {inputs.map((input) => <TXBlock
             key={input.txid}
             txid={input.txid}
@@ -65,11 +72,11 @@ const TransactionView = (props: Props): ReactElement => {
           />)}
         </Block>
         <Block>
-          <Text>Recipient:</Text>
+          <Bold>Recipient:</Bold>
           <Space></Space>
           <Wrap>{recipientAddress}</Wrap>
           <Space></Space>
-          <Text>Outputs</Text>
+          <Bold>Outputs</Bold>
           {outputs.map((output, index) => <TXBlock
             key={output.txid}
             txid={output.txid}
