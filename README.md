@@ -1,6 +1,6 @@
 # bitcoin-transactions-and-wallets
 
-Educational project for me to learn about how the Bitcoin network models transactions and user balances ("wallets").
+Educational project for me to learn about how the Bitcoin network models transactions and how users can send/receive transactions and view their balances (known commonly as "wallets").
 
 This is not designed with security in mind, but rather to understand the design principles behind Bitcoin.
 
@@ -20,25 +20,41 @@ Transaction outputs become inputs in following transactions. An owner of a UTXO 
 
 ## Interface
 
-I will design a barebones React app to play with the app.
-A new chain with empty wallets and transactions will be created on startup (unless I add data persistence).
+Barebones React app to allow users to create wallets, view balances, and send/receive BTC.
+Upon page load or refresh, a new chain with no wallets or transaction history is created.
 User will be able to create new wallets, send money from address to address, and see the transaction chain.
 
 ## Implementation Details
+
+### Genesis and Wallet Creation
+
+Upon startup a wallet named "Genesis" is created, along with the "Genesis UTXO" which has 21M BTC.
+A new wallet can "deposit" some money, which will result in Genesis sending that wallet that amount.
+In this way all transactions are chained from the Genesis UTXO.
+Wallets can send funds to other wallets but not back to Genesis.
+
+### Building and Verifying a Transaction
+
+To build a transaction, a user selects UTXO's that belong to it and uses them as "inputs" for the transaction.
+In Bitcoin, they could use these inputs to create as many outputs as they like to various addresses.
+In this implementation, the user can select only one address to send to.
+If the input value is greater than the target transaction value, a "change output" is created back to the sender's address.
+<br>
+The purpose of this is to create a <i>unique, verifiable, irreversible chain of transactions</i> that holds all the transaction history of the network.
+Users can thereby trust the authenticity of the network because they are able to verify it themselves.
 
 ### Transaction Structure
 
 ```yaml
 Transaction: {
+  Sender Public Key: used to verify transaction,
+  Signature: sender signature used to verify ownership of transaction inputs,
   Inputs: [{
-    Txid: hash of this transaction input (see below),
-    Sender Public Key: anyone can use this key to verify
-      1. ownership of this UTXO
-      2. authenticity of this transaction,
-    Value: BTC amount
+    Txid: unique TX identifier/hash (explained below),
   }],
   Outputs: [{
     Txid: all inputs are hashed with recipient address and signed by sender private key,
+    Signature: sender signature authorizing this transaction output,
     Recipient Address: hash of recipient public key,
     Value: BTC amount
   }]
