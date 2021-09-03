@@ -21,8 +21,15 @@ Transaction outputs become inputs in following transactions. An owner of a UTXO 
 ## Interface
 
 Barebones React app to allow users to create wallets, view balances, and send/receive BTC.
+
 Upon page load or refresh, a new chain with no wallets or transaction history is created.
+
 User will be able to create new wallets, send money from address to address, and see the transaction chain.
+
+## Usage
+npm install
+
+npm start
 
 ## Implementation Details
 
@@ -84,11 +91,6 @@ Nodejs crypto module
 key-encoder
 <br>
 styled-components
-
-## Usage
-npm install
-<br>
-npm start
 
 ## References
 https://github.com/bitcoinbook/bitcoinbook, especially Chapters 4 and 6
