@@ -26,7 +26,7 @@ const TransactionsView = (props: Props): ReactElement => {
   return (
     <OuterContainer>
       <h4>Transactions:</h4>
-      {inverseTXs.reverse().map((tx) => {
+      {inverseTXs.map((tx) => {
         return (
           <TxContainer key={tx.signature}>
             <TransactionView
