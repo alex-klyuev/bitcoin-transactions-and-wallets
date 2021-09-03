@@ -52,6 +52,8 @@ In this implementation, the user can select only one address to send to.
 
 If the input value is greater than the target transaction value, a "change output" is created back to the sender's address.
 
+In this way, all transactions are build from a chain of inputs that can be traced back to the Genesis UTXO.
+
 The purpose of this is to create a <i>unique, verifiable, irreversible chain of transactions</i> that holds all the transaction history of the network.
 
 Users can thereby trust the authenticity of the network because they are able to verify it themselves.
