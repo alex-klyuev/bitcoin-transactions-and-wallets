@@ -1,6 +1,6 @@
 # bitcoin-transactions-and-wallets
 
-[](./public/btc-txs-wlts-demo.mp4)
+[Video](./public/btc-txs-wlts-demo.mp4)
 
 Educational project for me to learn about how the Bitcoin network models transactions and how users can send/receive transactions and view their balances (known commonly as "wallets").
 
