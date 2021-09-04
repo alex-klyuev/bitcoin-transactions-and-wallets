@@ -84,7 +84,7 @@ Transaction: {
 
 ### Verification
 
-There are two components to a transactoin that must be verified by the chain:
+There are two components to a transaction that must be verified by the chain:
 1. Users who want to use UTXO's as inputs to transactions actually own those UTXOs
 2. Transactions are sent by who they are claimed to be sent by
 
