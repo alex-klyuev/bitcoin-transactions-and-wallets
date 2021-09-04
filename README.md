@@ -116,5 +116,7 @@ styled-components
 
 ## References
 https://github.com/bitcoinbook/bitcoinbook, especially Chapters 4 and 6
+
 https://developer.bitcoin.org/devguide/block_chain.html
+
 https://bitcoin.org/bitcoin.pdf
