@@ -95,7 +95,7 @@ I adopted a simpler approach in this implementation: a user claiming a UTXO must
 
 The chain verifies that the public key indeed corresponds to that address (the address is simply a hash of the public key) and verifies the signature.
 
-<img src='./public/utxo-ownership'>
+<img src='./public/utxo-ownership.png'>
 
 ## Transaction Authenticity
 More similar to the Bitcoin implementation, a Bitcoin sender hashes together the input transaction hashes, the recipient's address, and digitally signs it. This can similarly be verified by anyone by using the sender's public key.
