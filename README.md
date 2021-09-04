@@ -1,6 +1,6 @@
 # bitcoin-transactions-and-wallets
 
-(https://user-images.githubusercontent.com/59275828/132078900-de9237e5-d6bc-49e2-8170-2f25e61d7efc.mp4)
+[Demo](https://user-images.githubusercontent.com/59275828/132078900-de9237e5-d6bc-49e2-8170-2f25e61d7efc.mp4)
 
 Educational project for me to learn about how the Bitcoin network models transactions and how users can send/receive transactions and view their balances (known commonly as "wallets").
 
