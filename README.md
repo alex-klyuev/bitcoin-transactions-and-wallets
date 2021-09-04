@@ -16,7 +16,7 @@ Transactions are chained together similar to blocks, using hashing and public-ke
 
 Transaction outputs become inputs in following transactions. An owner of a UTXO can "unlock" it via their keys, and build a transaction to any other address on the network.
 
-<i>Each output can only be used as an input once.</i> This is verified by the consensus network / miners, which is out of scope for this project.
+<i>Each output can only be used as an input once.</i> In Bitcoin, this is verified by the consensus network / miners, which is out of scope for this project.
 
 ## Interface
 
