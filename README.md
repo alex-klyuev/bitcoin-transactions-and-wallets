@@ -1,5 +1,9 @@
 # bitcoin-transactions-and-wallets
 
+<img src=./public/ezgif.com-gif-maker.gif>
+
+<img src=./public/ezgif.com-gif-maker.webp>
+
 Educational project for me to learn about how the Bitcoin network models transactions and how users can send/receive transactions and view their balances (known commonly as "wallets").
 
 This is not designed with security in mind, but rather to understand the design principles behind Bitcoin.
