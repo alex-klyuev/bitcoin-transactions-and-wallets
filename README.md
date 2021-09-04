@@ -99,12 +99,11 @@ The chain verifies that the public key indeed corresponds to that address (the a
 
 ### 2. Transaction Authenticity
 
+More similar to the Bitcoin implementation, a Bitcoin sender hashes together the input transaction hashes, the recipient's address, and digitally signs it. This can similarly be verified by anyone by using the sender's public key.
+
 Here is the full workflow of building a transaction in this implementation:
 
 <img src='./public/transaction-flow.png'>
-
-## Transaction Authenticity
-More similar to the Bitcoin implementation, a Bitcoin sender hashes together the input transaction hashes, the recipient's address, and digitally signs it. This can similarly be verified by anyone by using the sender's public key.
 
 ## Libraries
 create-react-app
