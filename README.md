@@ -69,10 +69,10 @@ Transaction: {
   Sender Public Key: used to verify transaction,
   Signature: sender signature used to verify ownership of transaction inputs,
   Inputs: [{
-    Txid: unique TX identifier/hash (explained below),
+    Txid: unique TX identifier/hash,
   }],
   Outputs: [{
-    Txid: all inputs are hashed with recipient address and signed by sender private key,
+    Txid: unique TX identifier/hash,
     Signature: sender signature authorizing this transaction output,
     Recipient Address: hash of recipient public key,
     Value: BTC amount
@@ -88,12 +88,14 @@ There are two components to a transactoin that must be verified by the chain:
 1. Users who want to use UTXO's as inputs to transactions actually own those UTXOs
 2. Transactions are sent by who they are claimed to be sent by
 
-### UTXO
+### 1. UTXO
 In Bitcoin, this is accomplished via a locking/unlocking script, which is modeled by a Turing-incomplete scripting language.
 
-I adopted a simpler approach in this implementation: a user claiming a UTXO must present their public key and digitally sign their address.
+I adopted a simpler approach in this implementation: a user claiming a UTXO must present their public key and digitally sign the input hash used in their transaction.
 
 The chain verifies that the public key indeed corresponds to that address (the address is simply a hash of the public key) and verifies the signature.
+
+<img src='./public/utxo-ownership'>
 
 ## Transaction Authenticity
 More similar to the Bitcoin implementation, a Bitcoin sender hashes together the input transaction hashes, the recipient's address, and digitally signs it. This can similarly be verified by anyone by using the sender's public key.
