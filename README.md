@@ -42,7 +42,7 @@ A new wallet can "deposit" some money, which will result in Genesis sending that
 In this way all transactions are chained from the Genesis UTXO.
 Wallets can send funds to other wallets but not back to Genesis.
 
-### Building and Verifying a Transaction
+### Building and Chaining Transactions
 
 To build a transaction, a user selects UTXO's that belong to it and uses them as "inputs" for the transaction.
 
@@ -88,7 +88,7 @@ There are two components to a transactoin that must be verified by the chain:
 1. Users who want to use UTXO's as inputs to transactions actually own those UTXOs
 2. Transactions are sent by who they are claimed to be sent by
 
-### 1. UTXO
+### 1. UTXO Ownership
 In Bitcoin, this is accomplished via a locking/unlocking script, which is modeled by a Turing-incomplete scripting language.
 
 I adopted a simpler approach in this implementation: a user claiming a UTXO must present their public key and digitally sign the input hash used in their transaction.
