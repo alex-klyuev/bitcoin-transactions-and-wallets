@@ -80,7 +80,7 @@ Transaction: {
 }
 ```
 
-UTXOs are unspent transaction outputs, and are also referenced from user wallet software.
+UTXOs are unspent transaction outputs. The state of the "UTXO Set" is managed from the App component and updated after every transaction (UTXOs used as inputs are removed, while the new outputs created are added).
 
 ### Verification
 
