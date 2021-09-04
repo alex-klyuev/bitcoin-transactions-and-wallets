@@ -1,10 +1,8 @@
 # bitcoin-transactions-and-wallets
 
-<div align="center">
-  <a href="https://www.youtube.com/watch?v=wAwQ-9pIWU8"><img src="https://www.youtube.com/watch?v=wAwQ-9pIWU8" alt="IMAGE ALT TEXT"></a>
-</div>
-
 [Demo](https://user-images.githubusercontent.com/59275828/132078900-de9237e5-d6bc-49e2-8170-2f25e61d7efc.mp4)
+
+[Higher Quality Demo](https://youtu.be/UKXFLHVDTvk)
 
 Educational project for me to learn about how the Bitcoin network models transactions and how users can send/receive transactions and view their balances (known commonly as "wallets").
 
