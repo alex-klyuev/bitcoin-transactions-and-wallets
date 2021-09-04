@@ -89,7 +89,7 @@ There are two components to a transaction that must be verified by the chain:
 2. Transactions are sent by who they are claimed to be sent by
 
 ### 1. UTXO Ownership
-In Bitcoin, this is accomplished via a locking/unlocking script, which is modeled by a Turing-incomplete scripting language.
+In Bitcoin, this is accomplished via a locking/unlocking script, which is modeled by a Turing-incomplete scripting language to prevent loops that can be used in DOS attacks.
 
 I adopted a simpler approach in this implementation: a user claiming a UTXO must present their public key and digitally sign the input hash used in their transaction.
 
