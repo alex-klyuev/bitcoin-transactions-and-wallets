@@ -37,7 +37,7 @@ npm start
 
 Upon startup a wallet named "Genesis" is created, along with the "Genesis UTXO" which has 21M BTC.
 
-A new wallet can "deposit" some money, which will result in Genesis sending that wallet that amount.
+A new wallet can "deposit" money, which will result in Genesis sending that wallet that amount.
 
 In this way all transactions are chained from the Genesis UTXO.
 Wallets can send funds to other wallets but not back to Genesis.
@@ -80,7 +80,7 @@ Transaction: {
 }
 ```
 
-UTXOs are unspent transaction outputs. The state of the "UTXO Set" is managed from the App component and updated after every transaction (UTXOs used as inputs are removed, while the new outputs created are added).
+"UTXOs" are transaction outputs that have not been used as inputs yet ("unspent"). The state of the "UTXO Set" is managed from the App component and updated after every transaction (UTXOs used as inputs are removed, while the new outputs created are added).
 
 ### Verification
 
